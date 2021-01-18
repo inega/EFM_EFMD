@@ -1,0 +1,23 @@
+name: seismodelling
+channels:
+    - anaconda  
+    - defaults
+    - conda-forge
+dependencies:
+    - python=3.6.*
+    - spyder
+    - numpy=1.16.*
+    - matplotlib=3.2.*
+    - obspy=1.1.*
+    - scipy
+    - pip
+    - numba
+    - netcdf4
+    - seaborn
+    - pip:
+        - colorama==0.4.*
+        - PyQt5==5.12.*
+        - PySide2
+        - pyqtwebengine==5.12.*
+        - opencv-python
+  
