@@ -12,9 +12,9 @@ so the whole analysis can be done together.
 import pickle
 from glob import glob
 from datetime import datetime
+from vel_models import get_velocity_model
 from EFM_EFMD_tools import datetime_string
 from EFM import EFM_get_envelopes, EFM_analysis
-from vel_models import get_velocity_model, get_velocity_data
 from EFMD_Bayesian_Modelling import EFMD_Bayesian_modelling, EFMD_combine_results
 from F_EFMD import EFMD_plot_results_summary, EFMD_plot_results_summary_simple,\
                    EFMD_plot_x_histograms
@@ -29,16 +29,16 @@ t0=datetime.now()
 datetime_str = datetime_string( datetime.now() )
 
 # Initial settings:
-network = 'CN'
-array_nm = 'YKA'
+network = ''
+array_nm = ''
 
 # Set data source:
-data_source = 'IRIS'
+data_source = ''
 
 # Get vertical traveltimes through the model, so we can trim the seismograms to
 # the time window we use for the EFM/EFMD:
 units = 'm' # They're either 'm' or 'km'
-vel_source = 'AuSREM'
+vel_source = ''
 
 # Set number of layers:
 num_layers = 2
@@ -47,13 +47,13 @@ num_fbands = 5
 # Define number of iterations of the MCMC for the EFMD inversion:
 N_iters = 100
 
-EFM1 = True     # Calculate the normalised and non-normalised coda envelopes
-EFM2 = True      # Run the EFM analysis
-EFMD1 = True       # Run Bayesian EFMD
+EFM1 = False     # Calculate the normalised and non-normalised coda envelopes
+EFM2 = False      # Run the EFM analysis
+EFMD1 = False       # Run Bayesian EFMD
 syn_test = False
 EFMD2 = False          # Combine/plot EFMD results from multiple chains
-combine_results = True    # Combine results only (EFMD2 needs to be set to true)
-plot_comb_results = True    # Plot results only (EFMD2 needs to be set to true)
+combine_results = False    # Combine results only (EFMD2 needs to be set to true)
+plot_comb_results = False    # Plot results only (EFMD2 needs to be set to true)
 
 # Define scattering layer:
 if syn_test == True:
@@ -64,42 +64,25 @@ else:
 
 #                     ****************************************                #
 
-# Get vertical traveltimes through the model, so we can trim the seismograms to
-# the time window we use for the EFM/EFMD:
-
-# First two values in vel_data are crust and lithosphere bottom depths, and they
-# are given in km:
-vel_data = get_velocity_data( array_nm, vel_source )
-if num_layers == 1:
-    if units == 'km': layers_bottoms = [ vel_data[1]]
-    else: layers_bottoms = [ vel_data[1]*1000]
-elif num_layers == 2:
-    if units == 'km': layers_bottoms = [ vel_data[0], vel_data[1]]
-    else: layers_bottoms = [ vel_data[0]*1000, vel_data[1]*1000]
-elif num_layers == 3:
-    if units == 'km': layers_bottoms = [ vel_data[0]/2,  vel_data[0],
-                                        vel_data[1]]
-    else: layers_bottoms = [ vel_data[0]*1000/2, vel_data[0]*1000,
-                            vel_data[1]*1000]
-# Define layers bottoms for the 1 layer case (needed for the EFMD):
-lbs1 = [ vel_data[1]*1000]
 
 # Get velocity model and tJ. All variables are given in SI units:
-vel_model = get_velocity_model(array_nm, vel_source, num_layers, layers_bottoms,
-                               units = 'm')
+vel_model_fname = '/path/to/file/with/velocity/data/vel_model.csv'
+
+vel_model = get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
+                       units = 'm')
 v = vel_model['v']
 tJ = vel_model['tJ']
+layers_bottoms = vel_model['layers_bottoms']
+
 # Get velocity model and tJ for the 1 layer case (needed for the EFM):
-vmodel1 = get_velocity_model(array_nm, vel_source, 1, lbs1, units = 'm')
+vmodel1 = get_velocity_model(array_nm, vel_source, vel_model_fname, 1, units = 'm')
 v1 = vmodel1['v']
 tJ1 = vmodel1['tJ']
 
 # We need the inverse of the sampling rate:
-fopen = open('/nfs/a9/eeinga/Data/' + data_source + '/' + network + '/' \
-             + array_nm + '/' + array_nm + '_delta.pckl','rb')
+fopen = open('/path/to/file/with/delta/value.pckl')
 delta = pickle.load(fopen)
 fopen.close()
-if network == 'AU': delta = delta[array_nm]
 
 #                  ****************************************                   #
 
@@ -112,11 +95,10 @@ fbands = {'A':[0.5,1], 'B':[0.75,1.5], 'C':[1,2], 'D':[1.5,3],
 #                  ****************************************                   #
 
 # Define paths and file names for data, results and figures:
-EFM_sac_path = '/nfs/a9/eeinga/Data/' + data_source + '/' + network + '/' \
-               + array_nm + '/SAC/GQ_SAC/'
+EFM_sac_path = '/path/to/directory/where/the/GQ/SAC/data/live'
 
-EFM_path = '/nfs/a9/eeinga/Results/' + network + '/EFM/' + array_nm + '/'
-EFMD_path = '/nfs/a9/eeinga/Results/' + network + '/EFMD/' + array_nm + '/'
+EFM_path = '/path/to/directory/for/EFM/Results/'
+EFMD_path = '/path/to/directory/for/EFMD/Results/'
 EFM_fname = EFM_path + 'EFM_' + array_nm + '_'
 EFMD_fname = EFMD_path + 'EFMD_' + array_nm + '_'
 

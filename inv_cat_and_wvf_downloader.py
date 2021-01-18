@@ -11,23 +11,21 @@ Script to download event data, station inventory and waveforms from IRIS.
 
 import os
 import numpy as np
+from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
-from obspy import UTCDateTime, read_inventory, Stream
 
 #######            DEFINE PARAMETERS               #############
 
 # Define main path to save new files:
-main_path = '/nfs/a9/eeinga/Data/IRIS/'
+main_path = '/path/to/directory/where/we/want/to/store/the/data/'
 
-# Client for AU data = IRIS
-# Client for GR data = BGR ( only for station inventory, they don't have an
-# event service )
+# Define client:
 client = Client( 'IRIS' )
 
 # Array parameters:
-network = 'CN'
-array_nm = 'YKA'
-st_names = ['YK*']
+network = ''
+array_nm = ''
+st_names = ['']
 
 #Event parameters for catalogue downloads are INDEPENDENT of the network we
 # get seismograms from, but we need to define minimum and maximum magnitudes,
@@ -38,8 +36,8 @@ minrad = 30; maxrad = 80 # radius in degrees
 
 # Time period of interest: we will define the start time in string format
 # so we can also use it for the inventory file name.
-t_str = '20160101T000000'
-t1 = UTCDateTime( t_str ); t2 = UTCDateTime( '20181231T235959' )
+t_str = ''
+t1 = UTCDateTime( t_str ); t2 = UTCDateTime( '' )
 
 for st_nm in st_names:
 

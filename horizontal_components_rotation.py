@@ -21,14 +21,13 @@ client=Client()
 print(' ')
 
 #############       DEFINE ARRAY PARAMETERS        ###########################
-network = 'CN';
-array_nm = 'YKA'
+network = '';
+array_nm = ''
 location = '*'
-data_source = 'IRIS'
+data_source = ''
 
 # Define path to where files live:
-main_path = '/nfs/a9/eeinga/Data/' + data_source + '/'+network + '/' \
-                     + array_nm + '/'
+main_path = '/path/to/parent/directory/where/we/have/our/data/'
 
 #################       READ STATION INVENTORY           ######################
 
@@ -67,7 +66,8 @@ if 'BH1' in chan_list or 'BH2' in chan_list:
 # my SAC files into smaller batches so I can do it.
 
 sac_dirs = glob( main_path + 'SAC/raw_SAC*/')
-bad_dirs = [ main_path + 'SAC/raw_SAC_BU/', main_path + 'SAC/raw_SAC_noresp/']
+# Directories we want to ignore:
+bad_dirs = [ main_path + 'SAC/bad_dir_1/', main_path + 'SAC/bad_dir_2/']
 
 for directory in sac_dirs:
 
@@ -159,74 +159,6 @@ for directory in sac_dirs:
                         # making a copy of them for st3!
                         st2.rotate( 'NE->RT', back_azimuth=st2[0].stats.sac.baz,
                                    inventory = inv)
-
-                    # The section below is just a sanity check, I wanted to see
-                    # if the obspy functions actually gave me the right results.
-
-                    #try:
-                    #
-                    #    ######################################################
-                    #
-                    #    #            12Z to NEZ matrix                       #
-                    #
-                    #    for station in net:
-                    #        if station == st[0].stats.station:
-                    #            # Azimuth of BH1 and BH2 channels: angle measured
-                    #            # clockwise from north.
-                    #            azi_bh1 = net[station]['BH1_azi']
-                    #            azi_bh2 = net[station]['BH2_azi']
-                    #
-                    #    # The azimuth I need in order to rotate these axis back
-                    #    # to N and E is:
-                    #    azi_chan = azi_bh1 #;azi_chan=360-azi_bh1
-                    #    # Convert to radians:
-                    #    azi_chan = azi_chan*(2*np.pi/360)
-                    #
-                    #    # Define rotating matrix:
-                    #    #mat_12_ne = np.matrix([[np.cos(azi_chan), np.sin(azi_chan)],\
-                    #                 [(-1)*np.sin(azi_chan),np.cos(azi_chan)]])
-                    #    # Get inverse of the rotation matrix:
-                    #    #inv_nez_rot_mat = np.linalg.inv(nez_rot_mat)
-                    #
-                    #    ######################################################
-                    #
-                    #    #              NEZ to RTZ matrix                     #
-                    #
-                    #    #Calculate azimuth and/or backazimuth, etc from each
-                    #    #station to each event
-                    #    azi = st[0].stats.sac.az
-                    #    bazi = st[0].stats.sac.baz# There is a single backazimuth
-                    #                              #value for each station
-                    #    # Convert to radians:
-                    #    azi = azi * ( 2 * np.pi / 360)
-                    #    bazi = bazi * ( 2 * np.pi / 360)
-                    #
-                    #   #######        TRACE ROTATION            ##############
-                    #
-                    #    for trace in st:
-                    #        if trace.stats.channel == 'BH1':
-                    #            tr1 = trace.data
-                    #        elif trace.stats.channel == 'BH2':
-                    #            tr2 = trace.data
-                    #
-                    #    # Z12 to ZNE:
-                    #    st_ne = copy.deepcopy(st)
-                    #    trN = (1) * tr1 * np.cos(azi_chan) + (-1) * tr2 * np.sin(azi_chan)
-                    #    trE = (1) * tr1 * np.sin(azi_chan) + (1) * tr2 * np.cos(azi_chan)
-                    #    st_ne[1].data = trN; st_ne[1].stats.channel = 'BHN'
-                    #    st_ne[2].data = trN; st_ne[2].stats.channel = 'BHE'
-                    #
-                    #    # ZNE to ZRT:
-                    #    st_rt = copy.deepcopy(st_ne)
-                    #    trR = (-1) * trN * np.cos(bazi) + (-1) * trE * np.sin(bazi)
-                    #    trT = (1) * trN * np.sin(bazi) + (-1) * trE * np.cos(bazi)
-                    #    st_rt[1].data = trR; st_rt[1].stats.channel = 'BHR'
-                    #    st_rt[2].data = trT; st_rt[2].stats.channel = 'BHT'
-                    #
-                    #    # I get the exact same results than with the Obspy function,
-                    #    # so it works!
-                    #
-                    #                            END OF SANITY CHECK                                           #
 
                     #Save traces into new SAC files:
                     for trace in st2:

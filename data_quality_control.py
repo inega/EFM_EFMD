@@ -320,7 +320,7 @@ def quality_test_EFM( network, array_nm, data_source, main_path, raw_sac_path,
 
 
 def QT_sanity_check_EFM( network, array_nm, gq_sac_path, plots_path, inv_path,
-                        fband, num_layers):
+                        vel_source, vel_model_fname, fband, num_layers):
 
     '''
     Plot a section for each event  with good quality data to check that the
@@ -356,23 +356,9 @@ def QT_sanity_check_EFM( network, array_nm, gq_sac_path, plots_path, inv_path,
     N = len(dirs)
     print('Number of events with good quality data is ' + str(N))
 
-    # Define component, velocity model source, model type and units. We need
-    # these to get the velocity model data.
-    comp = 'Z'
-    vel_source = 'AuSREM'
-    units = 'm'
-
     # Get tJ from the get_velocity_model function.
-    vel_data = get_velocity_data( array_nm, vel_source )
-    # First two values in vel_data are crust and lithosphere bottom depths, and they
-    # are given in km:
-    if num_layers ==  1: layers_bottoms = [ vel_data[1]*1000]
-    elif num_layers ==  2: layers_bottoms = [ vel_data[0]*1000, vel_data[1]*1000]
-    elif num_layers ==  3:
-        layers_bottoms = [ vel_data[0]*1000/2, vel_data[0]*1000, vel_data[1]*1000]
-
-    vel_model = get_velocity_model(array_nm, vel_source, num_layers,
-                                    layers_bottoms, units = units)
+    vel_model = get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
+                       units = 'm')
     tJ = vel_model['tJ']
 
     for directory in dirs:
@@ -415,19 +401,22 @@ def QT_sanity_check_EFM( network, array_nm, gq_sac_path, plots_path, inv_path,
 sttime = datetime.now()
 
 # Define network, frequency band names and data components:
-network = 'CN'
+network = ''
 fbs = ['A','B','C','D','E','F','G','H']
 comps = ['Z','T','R']
 
 # Define array name and data source:
-array_nm = 'YKA'
-data_source = 'IRIS'
+array_nm = ''
+data_source = ''
+comp = 'Z'
+vel_source = ''
+units = 'm'
 
 # Define needed paths: a) path to the main directory where all our data and
-# directories are; b) path to the directories where our raw SAC data live;
-# c) path to the directory where we want to store the quality control plots.
-main_path = '/nfs/a9/eeinga/Data/' + data_source + '/' + network + '/' \
-            + array_nm + '/'
+# directories are; b) path to the directories where our raw SAC data live (we
+# may have more than one, if we divided the dataset); c) path to the directory
+# where we want to store the quality control plots.
+main_path = '/path/to/parent/directory/where/our/data/live/'
 raw_sac_paths = glob( main_path + 'SAC/raw_SAC*/')
 plots_path = main_path + 'SAC/QT_plots/'
 
@@ -460,11 +449,18 @@ print('Running sanity check...')
 gq_sac_path = main_path + 'SAC/GQ_SAC/'
 inv_path = main_path + 'station_inventory_' + network + '_' + array_nm + '.xml'
 num_layers = 1 #Not really important, we only need the one-way travel time
-                # through the lithosphere, which barely changes
-
+               # through the lithosphere, which barely changes
+# Define component, velocity model source, model type and units. We need
+# these to get the velocity model data.
+comp = 'Z'
+vel_source = 'AuSREM'
+units = 'm'
+# Path and file name of the file containing the velocity data: the format of
+# this file is in the README file.
+vel_model_fname = '/path/to/file/with/velocity/data.csv'
 for fband in fbs:
     QT_sanity_check_EFM( network, array_nm, gq_sac_path, plots_path, inv_path,
-                        fband, num_layers)
+                        vel_source, vel_model_fname, fband, num_layers)
 
 print('It took the whole script ' + str(datetime.now() - sttime) + ' to run')
 

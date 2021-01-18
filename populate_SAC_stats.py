@@ -22,19 +22,18 @@ client=Client()
 
 #############       DEFINE ARRAY PARAMETERS        ###########################
 
-network = 'CN';
-array_nm = 'YKA'
-st_nm = 'YK*'
-data_source = 'IRIS'
-data_format = 'mseed'
+network = '';
+array_nm = ''
+st_nm = ''
+data_source = ''
+data_format = ''
 location = '*'
 
 # Define path to where files live:
-main_path = '/nfs/a9/eeinga/Data/' + data_source + '/' + network + '/' \
-            + array_nm + '/'
+main_path = '/path/to/parent/directory/where/our/downloaded/data/live'
 
 # Starting date and time of period of interest:
-t_str = '20160101T000000'
+t_str = ''
 t1 = UTCDateTime( t_str)
 
 #################       READ STATION INVENTORY           ######################
