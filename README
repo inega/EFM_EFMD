@@ -6,7 +6,7 @@ to store our data and/or results need to be added to the scripts.
     
 Steps:
 
-0 - Create a python environment with all the necessary dependencies for the analysis. Then
+0 - Create a python environment with all the necessary dependencies for the analysis. The
     seismodelling_env.yml file can be used for this step.
 
 1 - Download data. The inv_cat_and_wvf_downloader.py script can be used to download event
