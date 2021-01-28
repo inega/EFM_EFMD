@@ -2,7 +2,8 @@ This directory contains all the files needed to characterize the small-scale het
 structure and attenuation of the lithosphere using the EFM/EFMD Bayesian approach. 
 
 The network, array name, velocity source name and paths of the directories where we want
-to store our data and/or results need to be added to the scripts.
+to store our data and/or results need to be added to the scripts. All executable files
+are stored in the /bin directory and modules than need to be loaded in the /lib directory.
     
 Steps:
 
@@ -68,7 +69,7 @@ Velocity data:
 
 #######################################################################################
 
-Extra/auxiliary functions are stored in these files:
+Extra/auxiliary functions are stored in these files in the lib directory:
 
     EFM_EFMD_tools.py - functions to create streams of traces and do basic processing/plotting
 			and other auxiliary functions
