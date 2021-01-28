@@ -12,7 +12,7 @@ import numpy as np
 import scipy as sp
 import scipy.interpolate
 
-def get_velocity_data( array_nm, vel_source, vel_model_fname ):
+def get_velocity_data(array_nm, vel_source, vel_model_fname):
 
     '''
     This function contains the velocity data from one or more sources for all
@@ -28,25 +28,25 @@ def get_velocity_data( array_nm, vel_source, vel_model_fname ):
 
     '''
 
-    with open( vel_model_fname, 'r') as fd:
-        reader = csv.reader( fd)
-        for i, row in enumerate( reader):
+    with open(vel_model_fname, 'r') as fd:
+        reader = csv.reader(fd)
+        for i, row in enumerate(reader):
             if i == 0: vel_source = row[0]
             if i == 1: array_nm = row[0]
-            if i == 2: crustal_thickness = np.int( row[0])
-            if i == 3: lithos_thickness = np.int( row[0])
+            if i == 2: crustal_thickness = np.int(row[0])
+            if i == 3: lithos_thickness = np.int(row[0])
             if i == 4:
                 depths = []
                 for val in row:
-                    val = float( val)
-                    depths.append( val)
-                depths = np.array( depths)
+                    val = float(val)
+                    depths.append(val)
+                depths = np.array(depths)
             if i == 5:
                 vels = []
                 for val in row:
-                    val = float( val)
-                    vels.append( val)
-                vels = np.array( vels)
+                    val = float(val)
+                    vels.append(val)
+                vels = np.array(vels)
 
     # Build list:
     vel_data = [crustal_thickness, lithos_thickness, depths, vels]
@@ -60,7 +60,7 @@ def get_velocity_data( array_nm, vel_source, vel_model_fname ):
 
 
 
-def get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
+def get_velocity_model(array_nm, vel_source, vel_model_fname, num_layers,
                        units = 'm'):
 
     '''
@@ -96,7 +96,7 @@ def get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
 
     # Vel data is: crust thickness[0], lithos_thickness[1], depths vector[2],
     # velocities vector[3].
-    vel_data = get_velocity_data( array_nm, vel_source, vel_model_fname )
+    vel_data = get_velocity_data(array_nm, vel_source, vel_model_fname)
 
     # Adapt units:
     if units == 'km':
@@ -107,20 +107,20 @@ def get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
 
     # Define layers bottoms:
     if num_layers == 1:
-        layers_bottoms = [ vel_data[1]]
+        layers_bottoms = [vel_data[1]]
     elif num_layers == 2:
-        layers_bottoms = [ vel_data[0], vel_data[1]]
+        layers_bottoms = [vel_data[0], vel_data[1]]
     elif num_layers == 3:
-        layers_bottoms = [ vel_data[0]/2,  vel_data[0], vel_data[1]]
+        layers_bottoms = [vel_data[0]/2,  vel_data[0], vel_data[1]]
 
     # Define depths and vels:
-    depths = np.append( 0, vel_data[2])
-    vels = np.append( vel_data[3][0], vel_data[3])
+    depths = np.append(0, vel_data[2])
+    vels = np.append(vel_data[3][0], vel_data[3])
 
     # Interpolate so we have more data points in the depths and velocity arrays.
     new_length = 100
     new_depths = np.linspace (0, depths.max(), new_length)
-    new_vels = sp.interpolate.interp1d( depths, vels, kind = 'linear')(new_depths)
+    new_vels = sp.interpolate.interp1d(depths, vels, kind = 'linear')(new_depths)
 
     ###########################################################################
     #          PART 2: CREATE VELOCITY MODELS FOR EACH MODEL                  #
@@ -133,19 +133,19 @@ def get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
     Ls = layers_bottoms
 
     # Get layer thicknesses:
-    thicks = [ layers_bottoms[0] ]
-    for i in range( num_layers - 1 ):
-        thicks.append( layers_bottoms[i+1] - layers_bottoms[i])
+    thicks = [layers_bottoms[0]]
+    for i in range(num_layers - 1):
+        thicks.append(layers_bottoms[i+1] - layers_bottoms[i])
 
     # Get indices of new_depths values closest to Ls values:
     inds = [0] # Add a zero so we can effectively slice new_vels
     for l in Ls:
-        inds.append ( (np.abs( l-new_depths )).argmin() )
+        inds.append ((np.abs(l-new_depths)).argmin())
 
     # Create initial velocity vector:
     vs = []
     for i in range(len(inds)-1):
-        vs.append( np.round( np.mean( new_vels[ inds[i]:inds[i+1] ] ), 3 ))
+        vs.append(np.round(np.mean(new_vels[inds[i]:inds[i+1]]), 3))
 
     ###########################################################################
     #         PART 3: GET TRAVELTIMES THROUGH THE MODEL                       #
@@ -160,15 +160,15 @@ def get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
     dtjs0 = np.array(thicks) / vs
 
     # Define the time when the wavefront reaches the free surface:
-    tJ = np.sum( dtjs0 )
+    tJ = np.sum(dtjs0)
 
     # Reverse both Ls and dtjs:
     inv_dtjs = []; inv_Ls = []; inv_thicks = []; inv_vs = []
     for i in np.arange(num_layers-1, -1, -1):
-        inv_Ls.append( Ls[i] )
-        inv_vs.append( vs[i] )
-        inv_thicks.append( thicks[i] )
-        inv_dtjs.append( dtjs0[i] )
+        inv_Ls.append(Ls[i])
+        inv_vs.append(vs[i])
+        inv_thicks.append(thicks[i])
+        inv_dtjs.append(dtjs0[i])
 
     # Make L, v, dtjs and tjs symmetric to account for the total reflection at
     # the free surface: we should have an odd number of layers, with layer J
@@ -179,13 +179,13 @@ def get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
     inv_dtjs[-1] = inv_dtjs[-1] * 2
     inv_thicks[-1] = inv_thicks[-1] * 2
 
-    thicks = np.append( np.array(inv_thicks), thicks[1:])
-    dtjs = np.append( np.array(inv_dtjs), dtjs0[1:])
-    v = np.append( np.array(inv_vs), vs[1:])
+    thicks = np.append(np.array(inv_thicks), thicks[1:])
+    dtjs = np.append(np.array(inv_dtjs), dtjs0[1:])
+    v = np.append(np.array(inv_vs), vs[1:])
 
     # Define vertical traveltimes from the bottom of the model to the top of
     # each layer (ts):
-    tjs = np.cumsum( dtjs)
+    tjs = np.cumsum(dtjs)
 
     ###########################################################################
     #             PART 4: CREATE FINAL DICTIONARY                             #
@@ -196,7 +196,7 @@ def get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
 
     # Let's put ALL results into a dictionary:
     vel_model = {'num_layers': num_layers,
-                'L': np.array( Ls ),
+                'L': np.array(Ls),
                 'thicks': thicks,
                 'v': v,
                 'dtjs': dtjs,

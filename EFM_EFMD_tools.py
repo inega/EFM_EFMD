@@ -7,7 +7,8 @@ or EFM/EFMD analysis.
 
 '''
 
-import obspy, copy
+import copy
+import obspy
 import numpy as np
 from glob import glob
 from obspy import read, Stream
@@ -18,7 +19,7 @@ from trace_alignment import align_stream_fk, stack_single
 
 
 
-def create_stream( array_nm, main_sac_path, comp):
+def create_stream(array_nm, main_sac_path, comp):
 
     '''
 
@@ -122,7 +123,7 @@ def create_stream( array_nm, main_sac_path, comp):
 
 
 
-def create_stream_EFM( array_nm, ev_date, main_sac_path, comp, fband, tJ,
+def create_stream_EFM(array_nm, ev_date, main_sac_path, comp, fband, tJ,
                       fname = None):
 
     '''
@@ -141,7 +142,7 @@ def create_stream_EFM( array_nm, ev_date, main_sac_path, comp, fband, tJ,
          - comp: (str) component we want to get traces from
          - fband: (str) frequency band we want to filter the traces into
                         (capital letter from A to H, see fbands dictionary below
-                         to check frequency range )
+                         to check frequency range)
          - tJ: (float) time it takes P waves to reach the free surface
          - fname: (str) path and filename for the alignment plot (optional)
 
@@ -169,11 +170,11 @@ def create_stream_EFM( array_nm, ev_date, main_sac_path, comp, fband, tJ,
 
         # Getting theoretical P wave arrivals to trim the traces to the time
         # window of interest.
-        t_P, t_P_date = get_Pwave_arrivals( st, ev_date, model='prem')
+        t_P, t_P_date = get_Pwave_arrivals(st, ev_date, model='prem')
 
         # Use fk analysis to align the traces:
         #In degrees:
-        st2 =  align_stream_fk ( array_nm, ev_date, st)
+        st2 =  align_stream_fk (array_nm, ev_date, st)
 
         for trace in st2:
             trace.stats.starttime = starttime
@@ -286,7 +287,7 @@ def filter_stream(stream,fmin,fmax):
 
 
 
-def normalize_traces( stream):
+def normalize_traces(stream):
 
     '''
     Function that takes the traces within an Obspy stream an normalizes their
@@ -304,13 +305,13 @@ def normalize_traces( stream):
     for trace in stream:
         max_a = abs(trace.data.max())
         min_a = abs(trace.data.min())
-        if max_a > min_a: max_amp.append( trace.data.max())
-        else: max_amp.append( abs( trace.data.min()))
+        if max_a > min_a: max_amp.append(trace.data.max())
+        else: max_amp.append(abs(trace.data.min()))
 
     # Normalize streams:
     #print('Normalizing traces...')
     for trace in stream:
-        trace.data = trace.data / max( max_amp)
+        trace.data = trace.data / max(max_amp)
 
     return stream
 
@@ -321,7 +322,7 @@ def normalize_traces( stream):
 
 
 
-def datetime_string ( datetime ):
+def datetime_string (datetime):
 
     '''
     Function that creates a string out of a given datetime object, so it can
@@ -355,7 +356,7 @@ def datetime_string ( datetime ):
 
 
 
-def stream_plotting_trim_stack( array_nm, ev_date, stream, comp, tJ,
+def stream_plotting_trim_stack(array_nm, ev_date, stream, comp, tJ,
                                filename = None, show_plots = False):
 
     '''
@@ -417,29 +418,29 @@ def stream_plotting_trim_stack( array_nm, ev_date, stream, comp, tJ,
 
         dist_degs = trace.stats.sac.gcarc
         # We are only interested in P wave arrivals:
-        arrivals = model.get_travel_times( source_depth_in_km = ev_dep,
+        arrivals = model.get_travel_times(source_depth_in_km = ev_dep,
                                           distance_in_degree = dist_degs)
 
         for arrival in arrivals:
             # Save travel times:
             if arrival.name == 'P':
                 P_arrs[trace.stats.station] = 120 + arrival.time
-                t_P.append( P_arrs[trace.stats.station])
+                t_P.append(P_arrs[trace.stats.station])
             if arrival.name == 'pP':
                 pP_arrs[trace.stats.station] = 120 + arrival.time
-                t_pP.append( pP_arrs[trace.stats.station])
+                t_pP.append(pP_arrs[trace.stats.station])
             if arrival.name == 'PcP':
                 PcP_arrs[trace.stats.station] = 120 + arrival.time
-                t_PcP.append( PcP_arrs[trace.stats.station])
+                t_PcP.append(PcP_arrs[trace.stats.station])
             if arrival.name == 'PP':
                 PP_arrs[trace.stats.station] = 120 + arrival.time
-                t_PP.append( PP_arrs[trace.stats.station])
+                t_PP.append(PP_arrs[trace.stats.station])
             if arrival.name == 'sP':
                 sP_arrs[trace.stats.station] = 120 + arrival.time
-                t_sP.append( sP_arrs[trace.stats.station])
+                t_sP.append(sP_arrs[trace.stats.station])
             if arrival.name == 'ScP':
                 ScP_arrs[trace.stats.station] = 120 + arrival.time
-                t_ScP.append( ScP_arrs[trace.stats.station])
+                t_ScP.append(ScP_arrs[trace.stats.station])
 
     # Get time shifts from theoretical P wave arrivals:
     max_t = max(t_P);P_tt_diffs = {}
@@ -485,7 +486,7 @@ def stream_plotting_trim_stack( array_nm, ev_date, stream, comp, tJ,
     x_tks = np.arange(max(t_P) - 120 - tJ, max(t_P) - 120 + 3 * tJ, 10)
     x_tks_labels = []
     for tk in x_tks:
-        x_tks_labels.append( int(tk))
+        x_tks_labels.append(int(tk))
 
     f = plt.figure(figsize = (20,10))
 
@@ -501,29 +502,29 @@ def stream_plotting_trim_stack( array_nm, ev_date, stream, comp, tJ,
     # Station labels of the traces present in the stream:
     stlbs = []
     for trace in st:
-        stlbs.append( trace.stats.station)
-    stlbs.append( 'Stack')
+        stlbs.append(trace.stats.station)
+    stlbs.append('Stack')
     # This contains ONLY the stations whose envelopes are contained in the stream.
 
     # Y axis ticks:
-    y_tks = np.arange( 0, 0.6 * ( len( stlbs) + 1), 0.6)
+    y_tks = np.arange(0, 0.6 * (len(stlbs) + 1), 0.6)
 
     ax1 = plt.gca()
     ax1.set_yticks(y_tks)
-    ax1.set_title( tit, fontsize = 30)
-    ax1.axis([ x_tks[0], x_tks[-1], min(st[0].data)-0.3, 0.63*(len(stlbs)+1)])
-    ax1.set_xlabel( 'Time (seconds)', fontsize = 24)
-    ax1.set_xticks( x_tks);#ax.set_yticks(y_tks)
-    ax1.set_yticklabels( stlbs, fontsize = 24)
-    ax1.set_xticklabels( x_tks_labels, fontsize = 24)
+    ax1.set_title(tit, fontsize = 30)
+    ax1.axis([x_tks[0], x_tks[-1], min(st[0].data)-0.3, 0.63*(len(stlbs)+1)])
+    ax1.set_xlabel('Time (seconds)', fontsize = 24)
+    ax1.set_xticks(x_tks);#ax.set_yticks(y_tks)
+    ax1.set_yticklabels(stlbs, fontsize = 24)
+    ax1.set_xticklabels(x_tks_labels, fontsize = 24)
     #ax1.yaxis.tick_right()
 
-    for v in range( len( stlbs) - 1):
+    for v in range(len(stlbs) - 1):
         # Expression for the phases vertical markers:
-        vm = np.arange( 0.6 * v - 0.5, 0.6 * v + 0.5, 0.005)
+        vm = np.arange(0.6 * v - 0.5, 0.6 * v + 0.5, 0.005)
         Parrs = (P_arrs[stlbs[v]]-120-P_tt_diffs[stlbs[v]])*np.ones(len(vm))
         if t_pP != []:
-            pParrs = ( pP_arrs[stlbs[v]] - 120 - pP_tt_diffs[stlbs[v]]) * np.ones(len(vm))
+            pParrs = (pP_arrs[stlbs[v]] - 120 - pP_tt_diffs[stlbs[v]]) * np.ones(len(vm))
         if t_PcP != []:
             PcParrs = (PcP_arrs[stlbs[v]] - 120 - PcP_tt_diffs[stlbs[v]]) * np.ones(len(vm))
         if t_PP != []:

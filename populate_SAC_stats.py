@@ -34,14 +34,14 @@ main_path = '/path/to/parent/directory/where/our/downloaded/data/live'
 
 # Starting date and time of period of interest:
 t_str = ''
-t1 = UTCDateTime( t_str)
+t1 = UTCDateTime(t_str)
 
 #################       READ STATION INVENTORY           ######################
 
 # NOTE: If there are any subarrays and you have NOT merged their respective
 # inventories into a total inventory, please do so now. The rest of this script
 # will NOT take subarrays or stations outside the inv file into account.
-inv = read_inventory( main_path + 'station_inventory_' + network + '_' + array_nm \
+inv = read_inventory(main_path + 'station_inventory_' + network + '_' + array_nm \
                      + '.xml')
 #Define network from inventory:
 net = inv[0]; stn = []
@@ -63,7 +63,7 @@ lat = np.mean(sta_lat); lon = np.mean(sta_lon)
 
 
 #############          READ EVENT CATALOGUE            #########################
-evs = read_events( main_path + 'deep_events_cat_' + network + '_' + array_nm \
+evs = read_events(main_path + 'deep_events_cat_' + network + '_' + array_nm \
                   + '_' + t_str + '.xml')
 
 
@@ -73,13 +73,13 @@ evs = read_events( main_path + 'deep_events_cat_' + network + '_' + array_nm \
 # files:
 
 sac_path = main_path + 'SAC/raw_SAC/'
-if not os.path.exists( sac_path): os.makedirs( sac_path)
-os.chdir( sac_path)
+if not os.path.exists(sac_path): os.makedirs(sac_path)
+os.chdir(sac_path)
 
 ######     READ MINISEED FILES:    ##############
 
 path = main_path + 'WVF/'
-files = glob( path + '*.' + data_format )# LIST OF FILES INSIDE THE WVF DIRECTORY
+files = glob(path + '*.' + data_format)# LIST OF FILES INSIDE THE WVF DIRECTORY
 N = len(files)
 
 print('Number of waveform files: ', N)
@@ -91,7 +91,7 @@ print('Number of waveform files: ', N)
 lens = []
 
 # Define a filter band to prevent amplifying noise during the deconvolution
-# The list or tuple defines the four corner frequencies ( f1, f2, f3, f4 ) of a
+# The list or tuple defines the four corner frequencies (f1, f2, f3, f4) of a
 # cosine taper which is one between f2 and f3 and tapers to zero for f1 < f < f2
 # and f3 < f < f4. f3 and f4 are 1 Hz and 0.5 Hz lower than the Nyquist
 # frequency respectively.
@@ -100,12 +100,12 @@ lens = []
 # stations in that case!)
 srate = inv[0][0][0].sample_rate
 nyq_freq = srate / 2
-pre_filt = ( 0.001, 0.25, nyq_freq - 1, nyq_freq - 0.5 )
+pre_filt = (0.001, 0.25, nyq_freq - 1, nyq_freq - 0.5)
 
 # Sanity check!
 print()
-print( 'Sampling rate is ' + str(srate) + ' Hz.')
-print( 'Pre-filter is = ' + str( pre_filt))
+print('Sampling rate is ' + str(srate) + ' Hz.')
+print('Pre-filter is = ' + str(pre_filt))
 print()
 
 # Get attributes and write sac files:
@@ -129,7 +129,7 @@ for q in range(N):
     # Some arrays have infrasound stations, as well as other non-seismic
     # instruments. Make sure the stream does NOT contain non-seismic data!
     for tr in stream:
-        if tr.stats.channel != 'BDF': st.append( tr)
+        if tr.stats.channel != 'BDF': st.append(tr)
 
     # Correct network name (for IMS data only):
     if data_source == 'IMS':
@@ -140,8 +140,8 @@ for q in range(N):
     lens.append(len(st))
 
     # Remove instrument response (only if we didn't do it before!)
-    st.remove_response( pre_filt = pre_filt, output = 'VEL', inventory = inv,
-                       zero_mean = True, taper = True )
+    st.remove_response(pre_filt = pre_filt, output = 'VEL', inventory = inv,
+                       zero_mean = True, taper = True)
 
     etimes = str(st[0].stats.starttime + 120)[:-8]
 
@@ -200,7 +200,7 @@ for q in range(N):
                     try:
                         # Calculate distance, azimuth, backazimuth, etc from
                         # each station to each event
-                        distaz = distaz_client.distaz( station_lat, station_lon,
+                        distaz = distaz_client.distaz(station_lat, station_lon,
                                                       event_lat, event_lon)
                         dist_km = distaz['distancemeters']/1000
 
@@ -241,7 +241,7 @@ for q in range(N):
 
 print('Everything worked just fine')
 
-print('Total number of files you should have is ' + str( sum( lens)))
+print('Total number of files you should have is ' + str(sum(lens)))
 
 
 

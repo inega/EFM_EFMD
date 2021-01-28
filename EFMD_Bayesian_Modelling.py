@@ -16,7 +16,7 @@ from F_EFMD import *
 from datetime import datetime
 
 
-def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
+def EFMD_Bayesian_modelling (array_nm, fbands, units, delta, Q_i, N_iters,
                              scattering_layer, vel_model, datetime_str,
                              s_nces_fname, s_envs_fname, results_fname,
                              figs_fname, syn_test = False, showplots = False):
@@ -134,7 +134,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
         s_nces, data_envs, s_envs, \
         maxamp_inds, DW_end_inds, cfs, \
         inv_Qi_vals, inv_Qds, delta, \
-        s_nces_dataset, envs_dataset = EFMD_preprocess_data( array_nm,
+        s_nces_dataset, envs_dataset = EFMD_preprocess_data(array_nm,
                                                             fbands, s_nces_fname,
                                                             s_envs_fname,
                                                             vel_model, delta,
@@ -142,9 +142,9 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
                                                             syn_test = syn_test)
         # Input model string:
         input_model_str = ''
-        for i in range( num_layers - 1, N, 1):
-            input_model_str += '[ ' + str( input_model[i][0]/1000 ) + ', ' \
-                                + str( 100*input_model[i][1]) + ' ]'
+        for i in range(num_layers - 1, N, 1):
+            input_model_str += '[' + str(input_model[i][0]/1000) + ', ' \
+                                + str(100*input_model[i][1]) + ']'
 
     else:
         num_layers, N, L, tjs, dtjs, \
@@ -152,7 +152,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
         lambda_max, s_nces, data_envs, \
         s_envs, maxamp_inds, DW_end_inds, \
         cfs, inv_Qi_vals, inv_Qds, delta, \
-        s_nces_dataset, envs_dataset = EFMD_preprocess_data( array_nm,
+        s_nces_dataset, envs_dataset = EFMD_preprocess_data(array_nm,
                                                             fbands, s_nces_fname,
                                                             s_envs_fname,
                                                             vel_model, delta,
@@ -165,15 +165,15 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
     print(' ')
     print('******************************************************************')
     print(' ')
-    print('                Running EFMD, ' + str( num_layers ) + ' layers')
+    print('                Running EFMD, ' + str(num_layers) + ' layers')
     print(' ')
     print('Fbands are: ' + str(fbands))
     print(' ')
     if syn_test == True:
-        print('     Synthetic test. Scattering_layer(s): ' + scattering_layer )
+        print('     Synthetic test. Scattering_layer(s): ' + scattering_layer)
         print(' ')
-        print( 'Input model is: ')
-        print( input_model_str )
+        print('Input model is: ')
+        print(input_model_str)
         print(' ')
     print('******************************************************************')
     print(' ')
@@ -241,7 +241,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
 
     # Define minimum and maximum allowed values of the parameters
     min_a = lambda_min / 5; max_a = lambda_max * 2
-    min_E = np.exp( -10 ); max_E = 0.1
+    min_E = np.exp(-10); max_E = 0.1
 
     # Create initial model as combinations of random values of a and E
     # (correlation length and RMS velocity fluctuations): each model has a
@@ -251,29 +251,29 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
 
     # Randomly initialize the models (starting model for the MCMC):
     initial_model = np.zeros((N, 2))
-    for i in range( num_layers ):
+    for i in range(num_layers):
         if i == num_layers - 1:
-            initial_model[i][0] = np.random.uniform( min_a[i], max_a[i], 1)[0]
-            initial_model[i][1] = np.random.uniform( min_E, max_E, 1 )[0]
+            initial_model[i][0] = np.random.uniform(min_a[i], max_a[i], 1)[0]
+            initial_model[i][1] = np.random.uniform(min_E, max_E, 1)[0]
         else:
-            initial_model[i][0] = np.random.uniform( min_a[i], max_a[i], 1)[0]
-            initial_model[i][1] = np.random.uniform( min_E, max_E, 1 )[0]
+            initial_model[i][0] = np.random.uniform(min_a[i], max_a[i], 1)[0]
+            initial_model[i][1] = np.random.uniform(min_E, max_E, 1)[0]
             initial_model[-(1+i)][0] = initial_model[i][0]
             initial_model[-(1+i)][1] = initial_model[i][1]
 
     # Initialize current_model:
-    current_model = np.zeros( (N, 2) )
+    current_model = np.zeros((N, 2))
 
     print('Initial model is:')
-    print( initial_model )
+    print(initial_model)
     print('')
     print('Correlation length step size is ' + str(a_step_size) \
           + ' metres, and minimum and maximum accepted values \nin each layer are ' \
-          + str( np.round( min_a, 3)) + ' and ' + str( np.round( max_a, 3)) \
+          + str(np.round(min_a, 3)) + ' and ' + str(np.round(max_a, 3)) \
           + ' metres.')
     print('RMS velocity fluctuations step size is ' + str(E_step_size*100) \
           + '%, and minimum and maximum accepted values in each layer are ' \
-          + str( np.round (min_E*100, 3)) + '% and ' + str(max_E*100) + '%.')
+          + str(np.round (min_E*100, 3)) + '% and ' + str(max_E*100) + '%.')
     print(' ')
 
     ###########################################################################
@@ -303,11 +303,11 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
 
     # Create matrices to store 2D histograms of the synthetic envelopes:
     nrows = 1000
-    hist_range = np.linspace( -0.02, 4.0, nrows )
+    hist_range = np.linspace(-0.02, 4.0, nrows)
     hists_2D_syn_envs = {}
 
     for fband in fbands:
-        hists_2D_syn_envs[fband] = np.zeros(( nrows, len( s_nces[fband])))
+        hists_2D_syn_envs[fband] = np.zeros((nrows, len(s_nces[fband])))
 
     # Choose percentages at which we want a summary of the results printed to
     # screen and the results saved into a file:
@@ -319,7 +319,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
 
         # Print summary of the results when reaching percentages of iterations
         # in percs:
-        if ( 100*k / N_iters) in percs:
+        if (100*k / N_iters) in percs:
             # Save dictionary with key results:
             EFMD_results = {'kept_models': kept_models,
                             'kept_logliks': np.array(kept_logliks),
@@ -333,13 +333,13 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
                             'times': np.array(times),
                             'Unexpected_errors': unexpected_errors,
                             'perc_iters_completed': (100 * k / N_iters)}
-            h = open( results_fname, 'wb')
+            h = open(results_fname, 'wb')
             pickle.dump(EFMD_results, h)
             h.close()
-            EFMD_modelling_summary( k, N_iters, num_layers, units, kept_models,
+            EFMD_modelling_summary(k, N_iters, num_layers, units, kept_models,
                                    kept_logliks, kept_syn_envs, times, rejections,
                                    good_accepts, rand_accepts, a_accepts,
-                                   a_updates, E_accepts, E_updates )
+                                   a_updates, E_accepts, E_updates)
 
         t1 = datetime.now()
 
@@ -353,14 +353,14 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
 
             # Update model parameters and get index pointing to which parameter
             # was updated:
-            current_model, param = EFMD_model_update( model, num_layers,
+            current_model, param = EFMD_model_update(model, num_layers,
                                                      a_step_size, E_step_size,
                                                      min_a, max_a, min_E, max_E)
             if param == 0: a_updates += 1
             elif param == 1: E_updates += 1
 
-            tdiff0 = ( datetime.now() - t1 )
-            model_update_times.append( tdiff0.seconds + (tdiff0.microseconds / 1e6) )
+            tdiff0 = (datetime.now() - t1)
+            model_update_times.append(tdiff0.seconds + (tdiff0.microseconds / 1e6))
 
 
         try:
@@ -393,7 +393,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
                 ###############################################################
 
                 # Calculate synthetic envelope:
-                syn_env_results = get_synthetic_envelope( current_model, s_env,
+                syn_env_results = get_synthetic_envelope(current_model, s_env,
                                                           delta, tjs, dtjs, cf,
                                                           N, v, tJ, vJ,
                                                           inv_Qi_val, maxamp_ind)
@@ -412,13 +412,13 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
                 inv_Qd = inv_Qds[fband]
 
                 # Calculate loglikelihood for this frequency band:
-                loglik = get_loglik ( data, syn_data, inv_Qd )
+                loglik = get_loglik (data, syn_data, inv_Qd)
 
                 # Add loglikelihood to list to average over all fbands:
-                logliks.append( loglik )
+                logliks.append(loglik)
 
             # Calculate the mean loglikelihood for this model:
-            current_loglik = np.mean( np.array( logliks ))
+            current_loglik = np.mean(np.array(logliks))
 
             # Calculate the L ratio:
             if k == 0:
@@ -428,38 +428,38 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
             else:
                 # We need to minimise the loglikelihood in order to obtain the
                 # maximum likelihood.
-                L_ratio = np.exp( model_loglik - current_loglik )
+                L_ratio = np.exp(model_loglik - current_loglik)
                 L_ratios.append(L_ratio)
 
                 if current_loglik <= model_loglik:
                     model = current_model.copy()
                     model_loglik = current_loglik.copy()
-                    kept_models.append( model )
-                    kept_logliks.append( model_loglik )
-                    #kept_syn_envs.append( syn_envs )
+                    kept_models.append(model)
+                    kept_logliks.append(model_loglik)
+                    #kept_syn_envs.append(syn_envs)
                     # Add synthetic envelopes to 2D histograms matrices:
                     for fband in fbands:
-                        hists_2D_syn_envs[fband] = update_hists_2D_syn_envs( hists_2D_syn_envs[fband],
+                        hists_2D_syn_envs[fband] = update_hists_2D_syn_envs(hists_2D_syn_envs[fband],
                                                                              syn_envs[fband],
-                                                                             hist_range )
+                                                                             hist_range)
                     good_accepts = good_accepts + 1
-                    kept_results.append( [model, model_loglik] )
+                    kept_results.append([model, model_loglik])
                     if param == 0: a_accepts += 1
                     elif param == 1: E_accepts += 1
 
                 elif L_ratio > np.random.uniform(0, 1, 1):
                     model = current_model.copy()
                     model_loglik = current_loglik.copy()
-                    kept_models.append( model )
-                    kept_logliks.append( model_loglik )
-                    #kept_syn_envs.append( syn_envs )
+                    kept_models.append(model)
+                    kept_logliks.append(model_loglik)
+                    #kept_syn_envs.append(syn_envs)
                     # Add synthetic envelopes to 2D histograms matrices:
                     for fband in fbands:
-                        hists_2D_syn_envs[fband] = update_hists_2D_syn_envs( hists_2D_syn_envs[fband],
+                        hists_2D_syn_envs[fband] = update_hists_2D_syn_envs(hists_2D_syn_envs[fband],
                                                                              syn_envs[fband],
-                                                                             hist_range )
+                                                                             hist_range)
                     rand_accepts = rand_accepts + 1
-                    kept_results.append( [model, model_loglik] )
+                    kept_results.append([model, model_loglik])
                     if param == 0: a_accepts += 1
                     elif param == 1: E_accepts += 1
 
@@ -467,12 +467,12 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
                     rejections = rejections + 1
 
         except:
-            unexpected_errors.append( k )
+            unexpected_errors.append(k)
             print('Weird error!')
 
-        #print( 'Loop ' + str(k) + ' took ' + str( datetime.now() - t1) + ' seconds')
-        tdiff = ( datetime.now() - t1 )
-        times.append( tdiff.seconds + (tdiff.microseconds / 1e6) )
+        #print('Loop ' + str(k) + ' took ' + str(datetime.now() - t1) + ' seconds')
+        tdiff = (datetime.now() - t1)
+        times.append(tdiff.seconds + (tdiff.microseconds / 1e6))
 
 
     # *********************************************************************** #
@@ -489,23 +489,23 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
     print('Number of random models accepted is ' + str(rand_accepts))
 
     # Print ACCEPTANCE rate:
-    accepts_rate = np.round( ( (N_iters - rejections) / N_iters ) * 100, 4)
+    accepts_rate = np.round(((N_iters - rejections) / N_iters) * 100, 4)
     if accepts_rate > 60:
         print('Acceptance rate is ' + str(accepts_rate) + '%, too high!')
     elif accepts_rate < 30 :
         print('Acceptance rate is ' + str(accepts_rate) + '%, too low!')
     else: print('Acceptance rate is ' + str(accepts_rate) + '%')
 
-    a_accepts_rate = np.round( ( a_accepts / a_updates ) * 100, 2)
-    E_accepts_rate = np.round( ( E_accepts / E_updates ) * 100, 2)
-    print( 'Correlation length acceptance rate is ' + str( a_accepts_rate ) + '%')
-    print( 'Velocity fluctuations acceptance rate is ' + str( E_accepts_rate ) + '%')
+    a_accepts_rate = np.round((a_accepts / a_updates) * 100, 2)
+    E_accepts_rate = np.round((E_accepts / E_updates) * 100, 2)
+    print('Correlation length acceptance rate is ' + str(a_accepts_rate) + '%')
+    print('Velocity fluctuations acceptance rate is ' + str(E_accepts_rate) + '%')
     print(' ')
-    print('Average time per iteration was = ' + str( np.mean(times)) )
+    print('Average time per iteration was = ' + str(np.mean(times)))
     print(' ')
 
     # Get total number of accepted models:
-    num_models = len( kept_models )
+    num_models = len(kept_models)
 
     # Save structural parameters for each layer from kept models (we are only
     # interested in the first half of our model). I also create a_km and E_perc
@@ -514,24 +514,24 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
     a = {}; a_km = {}; E = {}; E_perc = {}; layer_labels = []
 
     for i in range(num_layers):
-        layer_labels.append( 'L' + str(i+1) )
+        layer_labels.append('L' + str(i+1))
     for key in layer_labels:
         a[key] = []
         a_km[key] = []
         E[key] = []
         E_perc[key] = []
     for mod in kept_models:
-        for i, key in enumerate( layer_labels ):
-            a[key].append( mod[num_layers - 1 + i][0] )
-            if units == 'm': a_km[key].append( mod[num_layers - 1 + i][0] / 1000)
-            elif units == 'km': a_km[key] = copy.deepcopy( a[key] )
-            E[key].append( mod[num_layers - 1 + i][1] )
-            E_perc[key].append( mod[num_layers - 1 + i][1]*100 )
+        for i, key in enumerate(layer_labels):
+            a[key].append(mod[num_layers - 1 + i][0])
+            if units == 'm': a_km[key].append(mod[num_layers - 1 + i][0] / 1000)
+            elif units == 'km': a_km[key] = copy.deepcopy(a[key])
+            E[key].append(mod[num_layers - 1 + i][1])
+            E_perc[key].append(mod[num_layers - 1 + i][1]*100)
     for key in layer_labels:
-        a[key] = np.array( a[key] )
-        a_km[key] = np.array( a_km[key] )
-        E[key] = np.array( E[key] )
-        E_perc[key] = np.array( E_perc[key] )
+        a[key] = np.array(a[key])
+        a_km[key] = np.array(a_km[key])
+        E[key] = np.array(E[key])
+        E_perc[key] = np.array(E_perc[key])
 
     ###########################################################################
     #          *****************************************************          #
@@ -541,7 +541,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
     # and synthetic envelopes:
     parameter = 'Mode'
     RM, RM_loglik, RM_syn_envs, RM_percs, \
-    MLM, MLM_loglik, MLM_syn_envs = EFMD_get_RM_MLM ( array_nm, fbands, data_envs,
+    MLM, MLM_loglik, MLM_syn_envs = EFMD_get_RM_MLM (array_nm, fbands, data_envs,
                                                      s_envs, delta, vel_model,
                                                      kept_models, kept_logliks,
                                                      a, E, maxamp_inds, DW_end_inds,
@@ -550,38 +550,38 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
 
     # RM string:
     RM_str = ''
-    for i in range( num_layers - 1, N, 1):
-        RM_str += '[ ' + str( np.round( RM[i][0]/1000, 3) ) + ', ' \
-                  + str( np.round( 100 * RM[i][1], 3)) + ' ]'
+    for i in range(num_layers - 1, N, 1):
+        RM_str += '[' + str(np.round(RM[i][0]/1000, 3)) + ', ' \
+                  + str(np.round(100 * RM[i][1], 3)) + ']'
 
     # RM string:
     RM_percs_str = ''
-    for i in range( num_layers - 1, N, 1):
-        RM_percs_str += '[ ' + str( np.round( RM_percs[i][0]/1000, 3) ) + ', ' \
-                        + str( np.round( 100 * RM_percs[i][1], 3)) + ' ]'
+    for i in range(num_layers - 1, N, 1):
+        RM_percs_str += '[' + str(np.round(RM_percs[i][0]/1000, 3)) + ', ' \
+                        + str(np.round(100 * RM_percs[i][1], 3)) + ']'
 
     # MLM model string:
     MLM_str = ''
-    for i in range( num_layers - 1, N, 1):
-        MLM_str += '[ ' + str( np.round( MLM[i][0]/1000, 3) ) + ', ' \
-                    + str( np.round( 100*MLM[i][1], 3)) + ' ]'
+    for i in range(num_layers - 1, N, 1):
+        MLM_str += '[' + str(np.round(MLM[i][0]/1000, 3)) + ', ' \
+                    + str(np.round(100*MLM[i][1], 3)) + ']'
 
     # Print input model, best_fitting_model and misfit to screen:
     if syn_test == True:
         print('Input model was: ')
-        print( input_model_str)
+        print(input_model_str)
     print(' ')
-    print( 'Representative Model is:')
-    print( RM_str )
-    print( 'RM parameters 95% Confidence Interval is:')
-    print( RM_percs_str )
+    print('Representative Model is:')
+    print(RM_str)
+    print('RM parameters 95% Confidence Interval is:')
+    print(RM_percs_str)
     print(' ')
-    print( 'RM loglikelihood is ' + str( RM_loglik ))
+    print('RM loglikelihood is ' + str(RM_loglik))
     print(' ')
     print('Minimum loglikelihood model is:')
-    print( MLM_str )
-    print( 'MLM loglikelihood after recalculating synthetic envelopes is ' \
-          + str( MLM_loglik ))
+    print(MLM_str)
+    print('MLM loglikelihood after recalculating synthetic envelopes is ' \
+          + str(MLM_loglik))
     print(' ')
 
     ###########################################################################
@@ -622,7 +622,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
                     'delta': delta}
 
     # Save the results into a file:
-    h = open( results_fname,'wb')
+    h = open(results_fname,'wb')
     pickle.dump(EFMD_results, h)
     h.close()
 
@@ -635,7 +635,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
     else: scat_layer_label = scat_layer_label = 'L' + str(scattering_layer) \
                              + '_scattering'
 
-    EFMD_plot_results( array_nm, fbands, units, vel_model, s_nces_dataset,
+    EFMD_plot_results(array_nm, fbands, units, vel_model, s_nces_dataset,
                       DW_end_inds, delta, EFMD_results, figs_fname,
                       scat_layer_label, parameter, syn_test = syn_test,
                       comb_results = False, showplots = False)
@@ -655,7 +655,7 @@ def EFMD_Bayesian_modelling ( array_nm, fbands, units, delta, Q_i, N_iters,
 
 
 
-def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer,
+def EFMD_combine_results (array_nm, fbands, units, delta, Q_i, scattering_layer,
                           vel_model, parameter, EFMD_path, s_nces_fname,
                           s_envs_fname, results_fnames, comb_results_fname,
                           syn_test = False):
@@ -736,15 +736,15 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
         cfs, inv_Qi_vals, \
         inv_Qds, delta, \
         resampled_s_nces_dataset, \
-        resampled_s_envs_dataset = EFMD_preprocess_data( array_nm, fbands,
+        resampled_s_envs_dataset = EFMD_preprocess_data(array_nm, fbands,
                                                         s_nces_fname, s_envs_fname,
                                                         vel_model, delta, Q_i,
                                                         syn_test = syn_test)
         # Input model string:
         input_model_str = ''
-        for i in range( num_layers - 1, N, 1):
-            input_model_str += '[ ' + str( input_model[i][0]/1000 ) + ', ' \
-                               + str( 100*input_model[i][1]) + ' ]'
+        for i in range(num_layers - 1, N, 1):
+            input_model_str += '[' + str(input_model[i][0]/1000) + ', ' \
+                               + str(100*input_model[i][1]) + ']'
 
     else:
         num_layers, N, L, tjs, \
@@ -755,7 +755,7 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
         cfs, inv_Qi_vals, \
         inv_Qds, delta, \
         resampled_s_nces_dataset, \
-        resampled_s_envs_dataset = EFMD_preprocess_data( array_nm, fbands,
+        resampled_s_envs_dataset = EFMD_preprocess_data(array_nm, fbands,
                                                         s_nces_fname, s_envs_fname,
                                                         vel_model, delta, Q_i,
                                                         syn_test = syn_test)
@@ -770,7 +770,7 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
     # a, a_km, E and E_perc need to be dictionaries:
     a_all = {}; a_km_all = {}; E_all = {}; E_perc_all = {}; layer_labels = []
     for i in range(num_layers):
-        layer_labels.append( 'L' + str(i+1) )
+        layer_labels.append('L' + str(i+1))
     for key in layer_labels:
         a_all[key] = []
         a_km_all[key] = []
@@ -784,10 +784,10 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
     burnin_lengths = []
 
     # Load results files:
-    for w, res_fname in enumerate( results_fnames):
+    for w, res_fname in enumerate(results_fnames):
 
-        fopen = open( res_fname, 'rb')
-        EFMD_res = pickle.load( fopen )
+        fopen = open(res_fname, 'rb')
+        EFMD_res = pickle.load(fopen)
         fopen.close()
 
         # Extract most relevant results and add these results to new lists:
@@ -797,68 +797,68 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
         # Calculate the mean value of the loglikelihood in the second part of
         # the MCMC:
         kept_logliks = EFMD_res['kept_logliks']
-        len_logliks = len( kept_logliks)
-        mean_loglik = np.mean( kept_logliks [ int(len_logliks/2) :] )
+        len_logliks = len(kept_logliks)
+        mean_loglik = np.mean(kept_logliks [int(len_logliks/2) :])
         # Define loglik value that will establish the end of the burn in phase
         # (it will finish when that value is reached for the first time).
         burnin_loglik = mean_loglik + mean_loglik * 0.05
-        for i, val in enumerate( kept_logliks ):
+        for i, val in enumerate(kept_logliks):
             if val < burnin_loglik:
                 print('Burn in length for MCMC number ' + str(w) + ' is ' + str(i))
                 burnin_length = i
-                burnin_lengths.append( i )
+                burnin_lengths.append(i)
                 break
 
         kept_models = EFMD_res['kept_models']
-        num_models += (len( kept_models ) - burnin_length)
-        for i in range( burnin_length, len( kept_models )):
-            models.append( kept_models[i] )
-            logliks.append( kept_logliks[i] )
+        num_models += (len(kept_models) - burnin_length)
+        for i in range(burnin_length, len(kept_models)):
+            models.append(kept_models[i])
+            logliks.append(kept_logliks[i])
 
         for fband in fbands:
-            hists_2D_all[fband].append( EFMD_res['hists_2D_syn_envs'][fband] )
+            hists_2D_all[fband].append(EFMD_res['hists_2D_syn_envs'][fband])
         a = EFMD_res['a']; a_km = EFMD_res['a_km']
         E = EFMD_res['E']; E_perc = EFMD_res['E_perc']
         for key in layer_labels:
-            for r1, val1 in enumerate( a[key] ):
-                if r1 >= burnin_length: a_all[key].append( val1 )
-            for r2, val2 in enumerate( a_km[key] ):
-                if r2 >= burnin_length: a_km_all[key].append( val2 )
-            for r3, val3 in enumerate( E[key] ):
-                if r3 >= burnin_length: E_all[key].append( val3 )
-            for r4, val4 in enumerate( E_perc[key] ):
-                if r4 >= burnin_length: E_perc_all[key].append( val4 )
+            for r1, val1 in enumerate(a[key]):
+                if r1 >= burnin_length: a_all[key].append(val1)
+            for r2, val2 in enumerate(a_km[key]):
+                if r2 >= burnin_length: a_km_all[key].append(val2)
+            for r3, val3 in enumerate(E[key]):
+                if r3 >= burnin_length: E_all[key].append(val3)
+            for r4, val4 in enumerate(E_perc[key]):
+                if r4 >= burnin_length: E_perc_all[key].append(val4)
 
-        logliks_all.append( kept_logliks[burnin_length:] )
-        hist_ranges.append( EFMD_res['hists_2D_range'] ) # They should all be the same!
+        logliks_all.append(kept_logliks[burnin_length:])
+        hist_ranges.append(EFMD_res['hists_2D_range']) # They should all be the same!
         total_N_iters += EFMD_res['N_iters']
         total_a_accepts += EFMD_res['a_accepts']
         total_a_updates += EFMD_res['a_updates']
         total_E_accepts += EFMD_res['E_accepts']
         total_E_updates += EFMD_res['E_updates']
-        total_accepts.append( EFMD_res['total_accepts_rate'] )
+        total_accepts.append(EFMD_res['total_accepts_rate'])
 
     # Convert logliks, a, a_km, E and E_perc into arrays (for convenience):
     for key in layer_labels:
-        a_all[key] = np.array( a_all[key] )
-        a_km_all[key] = np.array( a_km_all[key] )
-        E_all[key] = np.array( E_all[key] )
-        E_perc_all[key] = np.array( E_perc_all[key] )
-    logliks = np.array( logliks )
+        a_all[key] = np.array(a_all[key])
+        a_km_all[key] = np.array(a_km_all[key])
+        E_all[key] = np.array(E_all[key])
+        E_perc_all[key] = np.array(E_perc_all[key])
+    logliks = np.array(logliks)
 
     # Add 2D histograms into a single matrix for each fband:
     hists_2D = {}
     for fband in fbands:
-        temp_mat = np.zeros( (len( hists_2D_all[fband][0]),
-                              len( hists_2D_all[fband][0][0]) ))
+        temp_mat = np.zeros((len(hists_2D_all[fband][0]),
+                              len(hists_2D_all[fband][0][0])))
         for mat in hists_2D_all[fband]:
             temp_mat += mat
         hists_2D[fband] = temp_mat
 
     # Calculate total a and E acceptance rates and global acceptance rate:
-    total_accepts_rate = np.round( ( num_models / total_N_iters ) * 100, 2)
-    a_accepts_rate = np.round( ( total_a_accepts / total_a_updates ) * 100, 2)
-    E_accepts_rate = np.round( ( total_E_accepts / total_E_updates ) * 100, 2)
+    total_accepts_rate = np.round((num_models / total_N_iters) * 100, 2)
+    a_accepts_rate = np.round((total_a_accepts / total_a_updates) * 100, 2)
+    E_accepts_rate = np.round((total_E_accepts / total_E_updates) * 100, 2)
     hist_range = hist_ranges[0]
 
     ###########################################################################
@@ -867,7 +867,7 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
     # Get Representative Model, Minimum Loglikelihood Model, their loglikelihoods
     # and synthetic envelopes:
     RM, RM_loglik, RM_syn_envs, RM_percs, \
-    MLM, MLM_loglik, MLM_syn_envs = EFMD_get_RM_MLM ( array_nm, fbands, data_envs,
+    MLM, MLM_loglik, MLM_syn_envs = EFMD_get_RM_MLM (array_nm, fbands, data_envs,
                                                      s_envs, delta, vel_model,
                                                      models, logliks, a_all, E_all,
                                                      maxamp_inds, DW_end_inds,
@@ -876,41 +876,41 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
 
     # RM string:
     RM_str = ''
-    for i in range( num_layers - 1, N, 1):
-        RM_str += '[ ' + str( np.round( RM[i][0]/1000, 3) ) + ', ' \
-                  + str( np.round( 100 * RM[i][1], 3)) + ' ]'
+    for i in range(num_layers - 1, N, 1):
+        RM_str += '[' + str(np.round(RM[i][0]/1000, 3)) + ', ' \
+                  + str(np.round(100 * RM[i][1], 3)) + ']'
 
     # RM string:
     RM_percs_str = ''
-    for i in range( num_layers - 1, N, 1):
-        RM_percs_str += '[ ' + str( np.round( RM_percs[i][0]/1000, 4) ) + ', ' \
-        + str( np.round( 100 * RM_percs[i][1], 4)) + ' ]'
+    for i in range(num_layers - 1, N, 1):
+        RM_percs_str += '[' + str(np.round(RM_percs[i][0]/1000, 4)) + ', ' \
+        + str(np.round(100 * RM_percs[i][1], 4)) + ']'
 
     # MLM model string:
     MLM_str = ''
-    for i in range( num_layers - 1, N, 1):
-        MLM_str += '[ ' + str( np.round( MLM[i][0]/1000, 3) ) + ', ' \
-                   + str( np.round( 100*MLM[i][1], 3)) + ' ]'
+    for i in range(num_layers - 1, N, 1):
+        MLM_str += '[' + str(np.round(MLM[i][0]/1000, 3)) + ', ' \
+                   + str(np.round(100*MLM[i][1], 3)) + ']'
 
     # Print input model, best_fitting_model and misfit to screen:
     if syn_test == True:
         print('Input model was: ')
-        print( input_model_str)
+        print(input_model_str)
     print(' ')
-    print( 'Representative Model is:')
-    print( RM_str )
-    print( 'RM parameters 95% Confidence Interval is:')
-    print( RM_percs_str )
+    print('Representative Model is:')
+    print(RM_str)
+    print('RM parameters 95% Confidence Interval is:')
+    print(RM_percs_str)
     print(' ')
-    print( 'RM loglikelihood is ' + str( RM_loglik ))
+    print('RM loglikelihood is ' + str(RM_loglik))
     print(' ')
     print('Minimum loglikelihood model is:')
-    print( MLM_str )
-    print( 'MLM loglikelihood after recalculating synthetic envelopes is ' \
-          + str( MLM_loglik ))
+    print(MLM_str)
+    print('MLM loglikelihood after recalculating synthetic envelopes is ' \
+          + str(MLM_loglik))
     print(' ')
     print(' Acceptance rates are:')
-    print(' a = ' + str( a_accepts_rate ) + '%, E = ' + str( E_accepts_rate ) + '%' )
+    print(' a = ' + str(a_accepts_rate) + '%, E = ' + str(E_accepts_rate) + '%')
     print(' ')
 
 
@@ -935,8 +935,8 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
             v_layer = v[i]
 
             # Calculate aw/v factor:
-            fact_min = ( a_min * 2 * np.pi * cf ) / v_layer
-            fact_max = ( a_max * 2 * np.pi * cf ) / v_layer
+            fact_min = (a_min * 2 * np.pi * cf) / v_layer
+            fact_max = (a_max * 2 * np.pi * cf) / v_layer
 
             # Define numerical coefficients in the equation:
             c1 = 28.73; c2 = 16.77; c3 = 2.40
@@ -944,12 +944,12 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
             # Calculate the inverse of the scattering quality factor. Normally,
             # Qs inv max --> E_max and fact_min
             # Qsinv  min --> E_min and fact_max
-            min_num = ( c1 * (fact_min**3) )
-            max_num = ( c1 * (fact_max**3) )
-            min_denom = ( 1 + ( c2 * (fact_min**2) ) + ( c3 * (fact_min**4) ) )
-            max_denom = ( 1 + ( c2 * (fact_max**2) ) + ( c3 * (fact_max**4) ) )
-            Qs_inv_min = ( E_min**2 ) * ( min_num / max_denom )
-            Qs_inv_max = ( E_max**2 ) * ( max_num / min_denom )
+            min_num = (c1 * (fact_min**3))
+            max_num = (c1 * (fact_max**3))
+            min_denom = (1 + (c2 * (fact_min**2)) + (c3 * (fact_min**4)))
+            max_denom = (1 + (c2 * (fact_max**2)) + (c3 * (fact_max**4)))
+            Qs_inv_min = (E_min**2) * (min_num / max_denom)
+            Qs_inv_max = (E_max**2) * (max_num / min_denom)
 
             # Get Qs value (instead of its inverse):
             Qs_min = 1 / Qs_inv_max
@@ -965,12 +965,12 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
     Qs_tot = {}
     if num_layers == 2:
         for fband in fbands:
-            Qs_tot_min_num = ( Qs_EFMD[fband][1,0] * Qs_EFMD[fband][2,0] * tJ )
-            Qs_tot_max_num = ( Qs_EFMD[fband][1,1] * Qs_EFMD[fband][2,1] * tJ )
-            Qs_tot_min_denom = ( (tjs[1] * Qs_EFMD[fband][2,0]) \
-                                + (tjs[2] * Qs_EFMD[fband][1,0]) )
-            Qs_tot_max_denom = ( (tjs[1] * Qs_EFMD[fband][2,1]) \
-                                + (tjs[2] * Qs_EFMD[fband][1,1]) )
+            Qs_tot_min_num = (Qs_EFMD[fband][1,0] * Qs_EFMD[fband][2,0] * tJ)
+            Qs_tot_max_num = (Qs_EFMD[fband][1,1] * Qs_EFMD[fband][2,1] * tJ)
+            Qs_tot_min_denom = ((tjs[1] * Qs_EFMD[fband][2,0]) \
+                                + (tjs[2] * Qs_EFMD[fband][1,0]))
+            Qs_tot_max_denom = ((tjs[1] * Qs_EFMD[fband][2,1]) \
+                                + (tjs[2] * Qs_EFMD[fband][1,1]))
 
             Qs_tot_min = Qs_tot_min_num / Qs_tot_max_denom
             Qs_tot_max = Qs_tot_max_num / Qs_tot_min_denom
@@ -1015,7 +1015,7 @@ def EFMD_combine_results ( array_nm, fbands, units, delta, Q_i, scattering_layer
     results_fname = comb_results_fname + 'all_MCMCS.pckl'
 
     # Save the results into a file:
-    h = open( results_fname,'wb')
+    h = open(results_fname,'wb')
     pickle.dump(EFMD_comb_results, h)
     h.close()
 

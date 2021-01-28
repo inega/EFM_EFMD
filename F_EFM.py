@@ -6,7 +6,8 @@ First created on August 9, 2018
 
 '''
 
-import os, copy
+import os
+import copy
 import numpy as np
 #matplotlib.use('agg')
 from glob import glob
@@ -23,7 +24,7 @@ from trace_alignment import stack_single, align_stream_3c_fk
 
 
 
-def create_nce3c_EFM( array_nm, sac_path, fband, tJ, fname = None):
+def create_nce3c_EFM(array_nm, sac_path, fband, tJ, fname = None):
 
     '''
     This function computes the 3-component normalised coda envelopes required
@@ -78,7 +79,7 @@ def create_nce3c_EFM( array_nm, sac_path, fband, tJ, fname = None):
     ###########################################################################
 
     # Get ALL traces we have for a given event and array:
-    files = glob( sac_path + '*.SAC')
+    files = glob(sac_path + '*.SAC')
 
     # 0 - Create a separate stream for each component, but host them inside a
     # dictionary so it is easier to work with them. Further on, I will also
@@ -101,8 +102,8 @@ def create_nce3c_EFM( array_nm, sac_path, fband, tJ, fname = None):
                 if b_station == a_station and b_channel == 'BHT':
                     sts['st_t'].append(b[0])
 
-    print( 'Number of 3-component traces for this event is ' \
-          + str( len( sts['st_z'])))
+    print('Number of 3-component traces for this event is ' \
+          + str(len(sts['st_z'])))
 
     # For PSA, we are using streams only if they have 5 or more traces for the
     # vertical component. For ASAR and WRA, we will use as many traces as we have.
@@ -166,9 +167,9 @@ def create_nce3c_EFM( array_nm, sac_path, fband, tJ, fname = None):
             plt.grid()
 
             # Save plot in the parent directory of fname:
-            path = Path( fname)
-            if not os.path.exists( path.parent):
-                os.makedirs( path.parent)
+            path = Path(fname)
+            if not os.path.exists(path.parent):
+                os.makedirs(path.parent)
             plt.savefig(fname, bbox_inches = 'tight')
             plt.close()
             #print('Plotting alignment section...')
@@ -261,7 +262,7 @@ def create_nce3c_EFM( array_nm, sac_path, fband, tJ, fname = None):
             Id3c = 2 * np.trapz(y3c, x, dx = dx)
 
             # b.4. Replace non - normalized envelopes with the new ones:
-            nce_3c = np.sqrt( env3c**2 / Id3c )
+            nce_3c = np.sqrt(env3c**2 / Id3c)
 
             return envs3c, nce_3c, t, coda_ind, Id3c
 
@@ -302,9 +303,9 @@ def lin_misfits(params, time, envelope, coda_ind):
 
     # We only fit the envelope from the beginning of the coda til the end of it.
     # Parabolic fitting:
-    #s_rate = int( 1/(time[1] - time[0]) )
-    x = time[ coda_ind:-100 ]
-    y = np.log10( ( envelope[coda_ind:-100] )**2 )# THIS IS MY DATA.
+    #s_rate = int(1/(time[1] - time[0]))
+    x = time[coda_ind:-100]
+    y = np.log10((envelope[coda_ind:-100])**2)# THIS IS MY DATA.
 
     syn_y = params[0] + params[1]*x# THIS IS MY PREDICTION OF MY DATA
 
@@ -400,7 +401,7 @@ def EFM_misfits(params, Qs, fcs, v):
     factor = a * 2 * np.pi * x / v
 
     # Theoretical Qs values:
-    syn_y = (E**2) * ( c1 * (factor**3) ) / (1 + c2 * (factor**2) + c3 * (factor**4) )
+    syn_y = (E**2) * (c1 * (factor**3)) / (1 + c2 * (factor**2) + c3 * (factor**4))
 
     # Misfits: these are the differences between my data and my fitting line.
     misf = syn_y- y
@@ -443,7 +444,7 @@ def EFM_least_squares(Qs, fcs, v, params0):
             # f_scale = Margin between inlier and outlier residuals (inlier
             #           residuals should not significantly exceed this value
             # args = Additional arguments passed to fun
-    least_sq_res = least_squares( EFM_misfits, params0, loss = 'soft_l1',
+    least_sq_res = least_squares(EFM_misfits, params0, loss = 'soft_l1',
                                  max_nfev = 500, f_scale = 0.8,
                                  args = (Qs, fcs, v))
 
@@ -481,7 +482,7 @@ def QiQd_misfits(params, fcs, a1s, alpha):
 
     # Equation to fit:
     c = 2 * np.pi * np.log10(np.e)
-    syn_y = c * (Qd + Qi * ( x**(1 - alpha) ) )# THIS IS MY PREDICTION OF MY DATA.
+    syn_y = c * (Qd + Qi * (x**(1 - alpha)))# THIS IS MY PREDICTION OF MY DATA.
 
     # Misfits: these are the differences between my data and my fitting line.
     misf = syn_y - y
@@ -550,7 +551,7 @@ def plot_envelopes(array_nm, ev_date, envs, nce, fband, tJ, filename = None,
          - envs: (Obspy stream) stream of envelopes for the event
          - nce: (np.array) normalised coda envelope for the event
          - fband: (str) frequency band (capital letter from A to H, only for plot
-                  title )
+                  title)
          - tJ: (float) time it takes P waves to reach the free surface of the model
          - filename: (str) path + filename where we want to store our figure (optional)
          - show_plot: (bool) If False, plot will be closed without displaying it
@@ -565,12 +566,12 @@ def plot_envelopes(array_nm, ev_date, envs, nce, fband, tJ, filename = None,
     # Add the normalised coda envelope as a trace to a copy of the envelope stream.
     envels = copy.deepcopy(envs)
     envels.append(Trace())
-    envels[ - 1].stats.network = envels[0].stats.network
-    envels[ - 1].stats.station = 'TOTAL_NCE'
-    envels[ - 1].stats.starttime = envels[0].stats.starttime
-    envels[ - 1].stats.delta = envels[0].stats.delta
-    envels[ - 1].stats.sampling_rate = envels[0].stats.sampling_rate
-    envels[ - 1].data = nce
+    envels[- 1].stats.network = envels[0].stats.network
+    envels[- 1].stats.station = 'TOTAL_NCE'
+    envels[- 1].stats.starttime = envels[0].stats.starttime
+    envels[- 1].stats.delta = envels[0].stats.delta
+    envels[- 1].stats.sampling_rate = envels[0].stats.sampling_rate
+    envels[- 1].data = nce
 
     ################          PLOT SECTION         ############################
     ###########################################################################
@@ -582,7 +583,7 @@ def plot_envelopes(array_nm, ev_date, envs, nce, fband, tJ, filename = None,
     # Time vector for plots: we want it to be in seconds FROM THE EVENT, not
     # from the beginning of the trace. That is why we subtract 120 from t_P.
     t = (max(t_P) - 120 - tJ) \
-        + np.arange( 0, envels[0].stats.npts/envels[0].stats.sampling_rate,
+        + np.arange(0, envels[0].stats.npts/envels[0].stats.sampling_rate,
                     envels[0].stats.delta)
 
     colors = ['mediumaquamarine', 'darkslategrey', 'seagreen', 'forestgreen']
@@ -594,7 +595,7 @@ def plot_envelopes(array_nm, ev_date, envs, nce, fband, tJ, filename = None,
 
     # Y axis ticks:
     a = 0.18; b = 0.1
-    y_tks = np.arange(0, a*len(stlbs), a); y_tks[ - 1] = y_tks[ - 1]
+    y_tks = np.arange(0, a*len(stlbs), a); y_tks[- 1] = y_tks[- 1]
 
     f = plt.figure(figsize = (20, 15))
 
@@ -626,14 +627,14 @@ def plot_envelopes(array_nm, ev_date, envs, nce, fband, tJ, filename = None,
         else:
             ax1.plot(t, (a*v) + envels[v].data, color = colors[0], linewidth = 1)#Ok
 
-    ax1.axis([ max(t_P)-120-tJ, max(t_P)-120 + 3*tJ, -0.13,
+    ax1.axis([max(t_P)-120-tJ, max(t_P)-120 + 3*tJ, -0.13,
               max((a*v + b) + envels[v].data) + b])
 
     # Save plot in the parent directory of fname:
     if filename is not None:
-        path = Path( filename)
-        if not os.path.exists( path.parent):
-            os.makedirs( path.parent)
+        path = Path(filename)
+        if not os.path.exists(path.parent):
+            os.makedirs(path.parent)
         plt.savefig(filename, bbox_inches = 'tight')
     if show_plot == False: plt.close('all')
 

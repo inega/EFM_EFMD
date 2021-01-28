@@ -26,7 +26,7 @@ t0=datetime.now()
 
 # Generate datetime string so it can be used in file names (the main purpose is
 # avoiding overwriting results from different runs):
-datetime_str = datetime_string( datetime.now() )
+datetime_str = datetime_string(datetime.now())
 
 # Initial settings:
 network = ''
@@ -68,7 +68,7 @@ else:
 # Get velocity model and tJ. All variables are given in SI units:
 vel_model_fname = '/path/to/file/with/velocity/data/vel_model.csv'
 
-vel_model = get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
+vel_model = get_velocity_model(array_nm, vel_source, vel_model_fname, num_layers,
                        units = 'm')
 v = vel_model['v']
 tJ = vel_model['tJ']
@@ -119,7 +119,7 @@ if syn_test == False:
     s_nces_fname = DATA_s_nces_fname
 
     # Define file name for the EMFD modelling results and figures:
-    EFMD_results_fname = EFMD_fname + str( num_layers ) + 'layers_' \
+    EFMD_results_fname = EFMD_fname + str(num_layers) + 'layers_' \
                         + str(N_iters) + 'iters_' + datetime_str + '.pckl'
     EFMD_figs_fname = EFMD_results_fname[:-5]
 
@@ -129,11 +129,11 @@ elif syn_test == True:
 
         # Define synthetic dataset path and file name:
         s_nces_fname = EFMD_path + 'EFMD_' + array_nm + '_syn_dataset_' \
-                      + str( num_layers ) + 'layers_model_scatt_all_layers.pckl'
+                      + str(num_layers) + 'layers_model_scatt_all_layers.pckl'
 
         # Define file name #
         EFMD_results_fname = EFMD_path + 'EFMD_' + array_nm \
-                            + '_SYN_TEST_Bayesian_results_' + str( num_layers ) \
+                            + '_SYN_TEST_Bayesian_results_' + str(num_layers) \
                             + 'layers_model_scatt_all_layers_' + str(N_iters) \
                             + 'iters_' + datetime_str + '.pckl'
 
@@ -144,12 +144,12 @@ elif syn_test == True:
 
         # Define synthetic dataset path and file name:
         s_nces_fname = EFMD_path + 'EFMD_' + array_nm + '_syn_dataset_' \
-                        + str( num_layers ) + 'layers_model_scatt_layer' \
+                        + str(num_layers) + 'layers_model_scatt_layer' \
                         + scattering_layer + '.pckl'
 
         # Define file name for the modelling results:
         EFMD_results_fname = EFMD_path + 'EFMD_' + array_nm \
-                            + '_SYN_TEST_Bayesian_results_' + str( num_layers ) \
+                            + '_SYN_TEST_Bayesian_results_' + str(num_layers) \
                             + 'layers_model_L' + scattering_layer \
                             + '_layer_scattering_' + str(N_iters) + 'iters_' \
                             + datetime_str + '.pckl'
@@ -174,7 +174,7 @@ if EFM1 == True:
     # as it needs to get the normalised coda envelope for each event and frequency
     # band and stack them together.
     t_ini = datetime.now()
-    EFM_get_envelopes( array_nm, EFM_sac_path, EFM_path, EFMD_path, fbands, tJ1)
+    EFM_get_envelopes(array_nm, EFM_sac_path, EFM_path, EFMD_path, fbands, tJ1)
     print('It took the script ', str(datetime.now() - t_ini), ' to run EFM part 1')
 
 if EFM2 == True:
@@ -182,13 +182,13 @@ if EFM2 == True:
     # Qs^-1, Qi0, Qdiff0, L and alpha estimations. It will use a single scattering
     # layer with the same background velocity our lithosphere has.
     t_ini = datetime.now()
-    EFM_results = EFM_analysis( array_nm, fbands, v1, tJ1, delta, DATA_nces0_fname,
+    EFM_results = EFM_analysis(array_nm, fbands, v1, tJ1, delta, DATA_nces0_fname,
                                DATA_s_envs_fname, EFM_results_fname,
                                EFM_figs_fname, units = 'm', syn_test = False)
 
     t_1 = datetime.now()
     Q_i = EFM_results [array_nm]['Qi']
-    print('It took the script ', str( t_1 - t_ini), ' to run EFM part 2')
+    print('It took the script ', str(t_1 - t_ini), ' to run EFM part 2')
 
 ##############                STEP 3: EFMD                 ####################
 
@@ -206,7 +206,7 @@ else:
 if EFMD1 == True:
 
     # EFMD Part 1:
-    EFMD_results = EFMD_Bayesian_modelling ( array_nm, EFMD_fbands,
+    EFMD_results = EFMD_Bayesian_modelling (array_nm, EFMD_fbands,
                                             units, delta, Q_i, N_iters,
                                             scattering_layer, vel_model,
                                             datetime_str, s_nces_fname,
@@ -214,7 +214,7 @@ if EFMD1 == True:
                                             EFMD_results_fname,
                                             EFMD_figs_fname,
                                             syn_test = syn_test,
-                                            showplots = False )
+                                            showplots = False)
     t_2 = datetime.now()
     print('It took the script ', str(t_2 - t_1), ' to run EFMD part 1')
 
@@ -225,10 +225,10 @@ if EFMD1 == True:
 
 if EFMD2 == True:
 
-    print( '---------------------------------------------------------------')
+    print('---------------------------------------------------------------')
     print('')
 
-    # Define time strings of the results we want to combine ( all results files
+    # Define time strings of the results we want to combine (all results files
     # are called the same except for the time stamp):
 
     if syn_test == True:
@@ -262,7 +262,7 @@ if EFMD2 == True:
 
     # Get results filenames:
     path = EFMD_path + 'Final_results/' + subdir + '/'
-    results_fnames = glob( path + '*.pckl')
+    results_fnames = glob(path + '*.pckl')
 
     # Define parameter to be used to define the RM:
     parameter = 'Mode'
@@ -271,43 +271,43 @@ if EFMD2 == True:
     if syn_test == False:
         comb_results_fname = path + 'EFMD_' + array_nm \
                             + '_Bayesian_results_' \
-                            + str( num_layers ) + 'layers_model_' \
+                            + str(num_layers) + 'layers_model_' \
                             + scattering_layer + '_layer_scattering_'
     elif syn_test == True:
         comb_results_fname = path + 'EFMD_' + array_nm \
-                            + '_SYN_TEST_Bayesian_results_' + str( num_layers ) \
+                            + '_SYN_TEST_Bayesian_results_' + str(num_layers) \
                             + 'layers_model_' + scattering_layer \
                             + '_layer_scattering_'
 
     # Sanity check in case we run this part of the code more than once:
     for res_fname in results_fnames:
         if comb_results_fname in res_fname:
-            # print( 'File from previously combined results removed')
+            # print('File from previously combined results removed')
             # print('')
-            results_fnames.remove( res_fname)
+            results_fnames.remove(res_fname)
 
     # Define figures filename:
     figs_fname = comb_results_fname + parameter + '_'
 
     # Print summery of the case we're combining data for:
     print('')
-    print( array_nm + ', ' + str( num_layers )
+    print(array_nm + ', ' + str(num_layers)
             + ' layers')
-    print( 'Synthetic test: ' + str(syn_test))
-    print( 'Scattering layer: ' + scattering_layer )
+    print('Synthetic test: ' + str(syn_test))
+    print('Scattering layer: ' + scattering_layer)
     print('')
-    print( 'Frequency bands: ')
-    print( EFMD_fbands)
+    print('Frequency bands: ')
+    print(EFMD_fbands)
     print('')
 
     # Combine results:
     if combine_results == True:
 
-        print( '---------------------------------------------------------------')
+        print('---------------------------------------------------------------')
         print('')
-        print( 'Combining results from EFMD part 2...')
+        print('Combining results from EFMD part 2...')
 
-        EFMD_comb_results = EFMD_combine_results( array_nm, EFMD_fbands, units,
+        EFMD_comb_results = EFMD_combine_results(array_nm, EFMD_fbands, units,
                                                  delta, Q_i, scattering_layer,
                                                  vel_model, parameter,
                                                  EFMD_path, s_nces_fname,
@@ -316,12 +316,12 @@ if EFMD2 == True:
                                                  comb_results_fname,
                                                  syn_test = syn_test)
 
-        print( 'Results sucessfully combined!')
+        print('Results sucessfully combined!')
 
     if plot_comb_results == True:
 
-        print( '')
-        print( 'Plotting combined results...')
+        print('')
+        print('Plotting combined results...')
 
         # If we just combined the EFMD results, we want to use the EFMD_comb_results.
         # However, if we are just repeating the figures and don't want to combine
@@ -330,22 +330,22 @@ if EFMD2 == True:
         if combine_results == True:
             EFMD_comb_results = EFMD_comb_results
         else:
-            fopen = open( comb_results_fname + 'all_MCMCS.pckl', 'rb')
-            EFMD_comb_results = pickle.load( fopen)
+            fopen = open(comb_results_fname + 'all_MCMCS.pckl', 'rb')
+            EFMD_comb_results = pickle.load(fopen)
             fopen.close()
 
-        EFMD_plot_results_summary ( array_nm, EFMD_fbands, units, vel_model,
+        EFMD_plot_results_summary (array_nm, EFMD_fbands, units, vel_model,
                                     EFMD_comb_results, figs_fname, scattering_layer,
                                     parameter, syn_test = syn_test, comb_results = True,
                                     showplots = False)
 
-        EFMD_plot_results_summary_simple ( array_nm, EFMD_fbands, units,
+        EFMD_plot_results_summary_simple (array_nm, EFMD_fbands, units,
                                           vel_model, EFMD_comb_results, figs_fname,
                                           scattering_layer, parameter, syn_test = syn_test,
                                           comb_results = True, showplots = False)
 
         if num_layers != 1:
-            EFMD_plot_x_histograms ( array_nm, s_nces_fname, EFMD_comb_results,
+            EFMD_plot_x_histograms (array_nm, s_nces_fname, EFMD_comb_results,
                                     EFMD_fbands, figs_fname, syn_test = syn_test,
                                     comb_results = True, showplots = False)
 

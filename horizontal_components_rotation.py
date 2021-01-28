@@ -31,7 +31,7 @@ main_path = '/path/to/parent/directory/where/we/have/our/data/'
 
 #################       READ STATION INVENTORY           ######################
 
-inv = read_inventory( main_path + 'station_inventory_' + network + '_' \
+inv = read_inventory(main_path + 'station_inventory_' + network + '_' \
                      + array_nm + '.xml')
 
 #Define network from inventory:
@@ -42,7 +42,7 @@ nwk = inv[0]
 chan_list = []; net = {}
 for station in nwk:
     for channel in station:
-        chan_list.append( channel.code )
+        chan_list.append(channel.code)
 
 if 'BH1' in chan_list or 'BH2' in chan_list:
     print('Rotating from Z12 to ZRT...')
@@ -65,15 +65,15 @@ if 'BH1' in chan_list or 'BH2' in chan_list:
 # NOTE: The creation of station streams takes up too much memory, so I divided
 # my SAC files into smaller batches so I can do it.
 
-sac_dirs = glob( main_path + 'SAC/raw_SAC*/')
+sac_dirs = glob(main_path + 'SAC/raw_SAC*/')
 # Directories we want to ignore:
-bad_dirs = [ main_path + 'SAC/bad_dir_1/', main_path + 'SAC/bad_dir_2/']
+bad_dirs = [main_path + 'SAC/bad_dir_1/', main_path + 'SAC/bad_dir_2/']
 
 for directory in sac_dirs:
 
     if directory not in bad_dirs:
 
-        files = glob( directory + '*.SAC')# LIST OF ALL FILES INSIDE THE WVF DIRECTORY
+        files = glob(directory + '*.SAC')# LIST OF ALL FILES INSIDE THE WVF DIRECTORY
         N = len(files)
 
         print(' ************************************************************ ')
@@ -93,16 +93,16 @@ for directory in sac_dirs:
         print('Creating streams for every station and event, this step may take \
               a long time to run...')
         for q in range(N):
-            kk = read( files[q])
+            kk = read(files[q])
             # I use the station code from the trace in the file because some
             # stations' codes are three characters long while some are four, so
             # it is more difficult to get them from the file names.
-            key = files[q].replace( directory, '')[0:15] + ',' + kk[0].stats.station
+            key = files[q].replace(directory, '')[0:15] + ',' + kk[0].stats.station
             streams[key] = Stream()
 
         for q in range(N):
             kk = read(files[q])
-            key = files[q].replace( directory,'')[0:15] + ',' + kk[0].stats.station
+            key = files[q].replace(directory,'')[0:15] + ',' + kk[0].stats.station
             streams[key].append(kk[0])
 
         print('Streams for every station and event successfully created!')
@@ -140,7 +140,7 @@ for directory in sac_dirs:
                     if 'BH1' in chan_list or 'BH2' in chan_list:
                         st2 = copy.deepcopy(st)# This is the stream I rotate from
                                              # Z12 to ZNE with obspy.rotate
-                        st2.rotate( '->ZNE', back_azimuth = st2[0].stats.sac.baz,
+                        st2.rotate('->ZNE', back_azimuth = st2[0].stats.sac.baz,
                                    inventory = inv)
                         # Copy of st2 with only horizontal components
                         st3 = Stream(); st3.append(st2[1]); st3.append(st2[2])
@@ -148,7 +148,7 @@ for directory in sac_dirs:
                         # This step changes the traces in st2, as I am NOT
                         # making a copy of them for st3! The stream I will want
                         # to keep is st2, NOT st3.
-                        st3.rotate( 'NE->RT', back_azimuth=st2[0].stats.sac.baz,
+                        st3.rotate('NE->RT', back_azimuth=st2[0].stats.sac.baz,
                                    inventory=inv)
 
                     else:
@@ -157,7 +157,7 @@ for directory in sac_dirs:
 
                         # This step changes the traces in st2, as I am NOT
                         # making a copy of them for st3!
-                        st2.rotate( 'NE->RT', back_azimuth=st2[0].stats.sac.baz,
+                        st2.rotate('NE->RT', back_azimuth=st2[0].stats.sac.baz,
                                    inventory = inv)
 
                     #Save traces into new SAC files:
@@ -168,7 +168,7 @@ for directory in sac_dirs:
                                         + trace.stats.station + '.' \
                                         + trace.stats.channel + '.' \
                                         + str(trace.stats.sac.mag) + '.SAC'
-                            trace.write( filename, format = 'SAC')
+                            trace.write(filename, format = 'SAC')
 
                     print('Traces for event on ' + str(st[0].stats.starttime+120) \
                           + ' , station ' + st[0].stats.station \
@@ -179,24 +179,24 @@ for directory in sac_dirs:
                     #        plt.figure()
                     #        for trace in st3:
                     #            if trace.stats.channel == 'BHR':
-                    #                plot( trace.data + 1e-6, 'k',
+                    #                plot(trace.data + 1e-6, 'k',
                     #                      label = 'OBSPY ' + trace.stats.station \
                     #                      + ' ' + trace.stats.channel)
                     #            if trace.stats.channel == 'BHT':
-                    #                plot( trace.data, 'b', label = 'OBSPY ' \
+                    #                plot(trace.data, 'b', label = 'OBSPY ' \
                     #                      + trace.stats.station + ' ' \
                     #                      + trace.stats.channel)
                     #        for trace in st_rt:
                     #            if trace.stats.channel == 'BHR':
-                    #                plot( trace.data + 1e-6, 'g--',
+                    #                plot(trace.data + 1e-6, 'g--',
                     #                      label = 'MANUAL ' + trace.stats.station \
                     #                      + ' ' + trace.stats.channel)
                     #            if trace.stats.channel == 'BHT':
-                    #                plot( trace.data, 'r--', label = 'MANUAL ' \
+                    #                plot(trace.data, 'r--', label = 'MANUAL ' \
                     #                      + trace.stats.station + ' ' \
                     #                      + trace.stats.channel)
                     #        plt.axis([27223,28394,-0.7e-6,1.8e-6])
-                    #        plt.legend( loc = 'upper right')
+                    #        plt.legend(loc = 'upper right')
                     #        plt.grid()
                     #        plt.title('12-NE = ((BH1*cos,-BH2*sin),(BH1*sin,BH2*cos)) \
                     #                  , NE-RT = ((-BHE*cos,-BHN*sin),\
