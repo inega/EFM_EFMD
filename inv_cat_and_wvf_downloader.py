@@ -184,9 +184,6 @@ for st_nm in st_names:
         except:
             print('No data could be downloaded for event on ' + t_str[i])
         try:
-            # Remove instrument response from the signals:
-            # st.remove_response(pre_filt = pre_filt, inventory = inv,
-            #                     zero_mean = True, taper = True)
             print('Length of stream for event on ', str(ev_time[i]),
                   ' is ', len(st))
             lengths.append(len(st))

@@ -558,8 +558,6 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
                      + str(fbands[fband][1]) + 'Hz')
             plt.xlabel('Time (s)', fontsize = 24)
             plt.ylabel('$log (Amplitude^2)$', fontsize = 24)
-            #plt.ylabel('log($nce^2$)', fontsize = 60, rotation = 270)
-            #plt.title(array_nm, fontsize = 28)
             plt.grid(color = 'dimgrey', linewidth = 1)
             plt.xlim(20, 100); plt.ylim(-5, -0.5)
             plt.legend(loc = 'best', title = array_nm, ncol = 3,
@@ -569,8 +567,7 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
                                    width = 2)
             plt.gca().tick_params(axis = 'x', labelsize = 24, length = 10,
                                    width = 2)
-            #plt.gca().yaxis.set_label_position('right')
-            #plt.axis([-0, 3*tJ, -4, 0.5])
+
             for side in plt.gca().spines.keys():
                 plt.gca().spines[side].set_linewidth(3)
             fname = figs_fname + '_all_envs_linfits'
@@ -584,16 +581,11 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
 
             # IMPORTANT NOTE: The Qs-1 value I get for fband A is an outlier,
             # don't use it! (Don't use it either in next steps of the analysis!)
-            #v = np.mean(v)
             vel = v[0]
 
             # Initial estimate of my parameters:
             if units == 'km': params0 = np.array([1.7, 0.02])
             if units == 'm': params0 = np.array([1700, 0.02])
-
-            # Fit Qs values:
-            #if array_nm == 'PSA':
-            #    Qss = Qss[1:]; fcs = fcs[1:]
 
             EFM_fit = EFM_least_squares(Qs_inv_vals, fcs, vel, params0)
             # Parameters:
@@ -646,7 +638,6 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
             # Sanity check: plot results of the fitting.
             plt.figure(figsize = (15, 10))
             plt.title(array_nm +  ': Qs vs. theoretical curve', fontsize = 20)
-            #plt.xscale('log'); plt.yscale('log')
             plt.plot(x, theor_Qs_invs, 'r', linewidth = 3,
                      label = 'Theoretical curve = > a = [' + str(round(a_km, 1)) \
                      + ' + /-' + str(round(a_std_km, 1)) + '] km, $\epsilon$ = [' \
@@ -698,9 +689,6 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
             # DATA:
             # Define constant for our function:
             c = 2*np.pi*np.log10(np.e)
-            #x = fcs; y = a1_vals
-            #if array_nm != 'PSA': x = fcs[1:]; y = a1_vals[1:]
-            #else: x = fcs; y = a1_vals
             x = fcs[1:]; y = a1_vals[1:]
 
             # Create list to store the value of the squared residuals:
@@ -790,7 +778,6 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
                     invQd0_std = np.sqrt(VCM_Qi0Qd0[1][1])
                     Qi0_std = (1 / (inv_Qi0**2)) * invQi0_std
                     Qd0_std = (1 / (inv_Qd0**2)) * invQd0_std
-
 
                     # Get error on L:
                     L_std = (vel/(8*np.pi)) * Qd0_std

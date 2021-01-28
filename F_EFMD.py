@@ -154,30 +154,6 @@ def syn_envelope_preprocessing (model, s_env, delta, tjs, cf, N, v, tJ, vJ,
         else:
             Ed[h] =  Ed[h-1] * (np.exp(-1 * (wQi + wQ[h]) * (t[h]-t[h-1])))
 
-    # Sanity check plots:
-
-    # Plot Qs for each layer and Ed:
-    # plt.figure(figsize = (10,5))
-    # label = 'Qs value for each layer: ' + str(np.array(mod_Qs).transpose())
-    # plot(t, Ed,label = label)
-    # plot(t[tjs_inds[tJ_ind]], Ed[tjs_inds[tJ_ind]],'*r',markersize = 10)
-    # plt.grid()
-    # plt.legend(loc = 'best', ncol = 2)
-    # plt.title(array_nm+', '+fband)
-    # plt.ylabel('$E_D$')
-    # plt.xlabel('Time (s)')
-
-    # Plot squared velocity envelope and highlight the part we consider to be
-    # the direct wave:
-    # plt.figure()
-    # plot(t, sq_env, 'k', label = 'Squared velocity envelope')
-    # plot(x, y, 'r', label = 'Direct wave')
-    # plt.grid()
-    # plt.legend(loc = 'best')
-    # plt.xlabel('Time (s)')
-    # plt.ylabel('Amplitude')
-    # plt.title(array_nm+', '+str(fbands[fband][0])+'-'+str(fbands[fband][1])+' Hz')
-
     return mod_inv_Qs, t, tJ_ind, Ed, EdJ
 
 ###############################################################################
@@ -271,58 +247,6 @@ def get_synthetic_envelope(model, s_env, delta, tjs, dtjs, cf, N, v, tJ, vJ,
         # Sanity check:
         if len(Ecjs[n])  !=  Nt:
             print('ERROR: Ecj and t not the same length')
-
-    ###########################################################################
-
-    # # Sanity check!
-
-    # # Plot contributions to EcJ (terms from eq.10 in Korn):
-    # term1 = np.zeros(Nt); term2 = np.zeros(Nt); term3 = np.zeros(Nt)
-    # term4 = np.zeros(Nt); term5 = np.zeros(Nt); term6 = np.zeros(Nt)
-
-    # for i, tsam in enumerate(t):
-    #     term1[i] = (((1/(4 * dtjs[tJ_ind-1])) * Ecjs[tJ_ind-1][i] \
-    #                   * step_fun(tsam, tjs[tJ_ind-1])))
-    #     term2[i] = (((1/(4 * dtjs[tJ_ind+1])) * Ecjs[tJ_ind+1][i] \
-    #                   * step_fun(tsam, tjs[tJ_ind])))
-    #     term3[i] = (- ((1/(4 * dtjs[tJ_ind])) * Ecjs[tJ_ind][i] \
-    #                     * step_fun(tsam, tjs[tJ_ind])))
-    #     term4[i] = (- ((1/(4 * dtjs[tJ_ind])) * Ecjs[tJ_ind][i] \
-    #                     * step_fun(tsam, tjs[tJ_ind-1])))
-    #     term5[i] = (- ((2 * np.pi * cf * inv_Qi_val) * Ecjs[tJ_ind][i] \
-    #                     * step_fun(tsam, tjs[tJ_ind-1])))
-    #     term6[i] = (((2 * np.pi * cf * mod_inv_Qs[tJ_ind-1]) * Ed[i] \
-    #                   * step_fun(tsam, tjs[tJ_ind-1]) \
-    #                   * inv_step_fun(tsam, tjs[tJ_ind])))
-
-    # term1_str = '(1/(4 * dtjs[tJ_ind-1])) * Ecjs[tJ_ind-1][i] * step_fun(tsam' \
-    #             + ', tjs[tJ_ind-1])'
-    # term2_str = '(1/(4 * dtjs[tJ_ind-1])) * Ecjs[tJ_ind-1][i] * step_fun(tsam' \
-    #             + ', tjs[tJ_ind-1])'
-    # term3_str = '- ((1/(4 * dtjs[tJ_ind])) * Ecjs[tJ_ind][i] * step_fun(tsam' \
-    #             + ', tjs[tJ_ind]))'
-    # term4_str = '- ((1/(4 * dtjs[tJ_ind])) * Ecjs[tJ_ind][i] * step_fun(tsam' \
-    #             + ', tjs[tJ_ind-1]))'
-    # term5_str = '- ((2 * np.pi * cf * Qi) * Ecjs[tJ_ind][i] * step_fun(tsam' \
-    #             + ', tjs[tJ_ind-1]))'
-    # term6_str = '(2 * np.pi * cf * mod_Qs[tJ_ind-1]) * Ed[i] * step_fun(tsam' \
-    #             + ', tjs[tJ_ind-1]) * inv_step_fun(tsam, tjs[tJ_ind])'
-
-    # import matplotlib.pyplot as plt
-    # from matplotlib.pyplot import plot
-    # plt.figure()
-    # plot(t, term1, linewidth = 2, label = term1_str)
-    # plot(t, term2, linewidth = 2, label = term2_str)
-    # plot(t, term3, linewidth = 2, label = term3_str)
-    # plot(t, term4, linewidth = 2, label = term4_str)
-    # plot(t, term5, linewidth = 2, label = term5_str)
-    # plot(t, term6, linewidth = 2, label = term6_str)
-    # #plot(t, Ecjs[tJ_ind], 'k', label = 'EcJ')
-    # plt.axvline(tJ, linestyle = 'dotted', color = 'k', linewidth = 0.9,
-    #             label = 'P-wave reaches free surface')
-    # plt.xlabel('Time (s)')
-    # plt.grid()
-    # plt.legend(loc = 'upper right')
 
     ###########################################################################
 

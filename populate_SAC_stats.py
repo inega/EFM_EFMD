@@ -146,7 +146,6 @@ for q in range(N):
     etimes = str(st[0].stats.starttime + 120)[:-8]
 
     for ev in evs:
-        #print(str(ev.origins[0].time)+' - '+str(etimes))
         if str(ev.origins[0].time)[:-8] == etimes:
             print(etimes+', event found in the catalogue')
             event_lat = ev.origins[0].latitude
@@ -185,8 +184,7 @@ for q in range(N):
             sampling_rate = trace.stats.sampling_rate# Sampling rate
             delta = trace.stats.delta# Time interval between samples
             npts = trace.stats.npts# Number of data in the file
-            calib = trace.stats.calib# ???
-
+            calib = trace.stats.calib
 
             # Now I need to define some other attributes that may be useful:
 

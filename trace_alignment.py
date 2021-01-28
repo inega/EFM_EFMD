@@ -198,7 +198,7 @@ def align_stream_3c_fk (array_nm, stream_3c, ev_date, tJ, fname = None):
     # st is now my pre-aligned stream. The timeshifts I obtain from next steps
     # will be applied to st.
 
-    ################################################################################################
+    ###########################################################################
 
     # Apply shifts to trimmed traces as well:
     tr_length = []

@@ -17,9 +17,10 @@ import pickle
 import numpy as np
 from glob import glob
 from datetime import datetime
+from shutil import move as move
+from vel_models import get_velocity_model
 from fk_analysis import get_Pwave_arrivals
 from obspy import UTCDateTime, read, Stream
-from vel_models import get_velocity_data, get_velocity_model
 from EFM_EFMD_tools import create_stream_EFM, datetime_string, stream_plotting_trim_stack
 
 
@@ -475,76 +476,68 @@ print('It took the whole script ' + str(datetime.now() - sttime) + ' to run')
 
 # It is highly recommended to manually check ALL the plots created by the functions
 # above to get rid of bad events that may have passed the initial quality control.
-# Move the plots to an "Unusable events" directory so the code below can remove
-# these events from the dataset.
+# E.g. events with a smaller event within the time window of interest, clear
+# secondary arrivals (PcP, etc) and events that we won't be able to use for
+# whatever reasons.
+# Move the section plots to an "Unusable events" directory so the code below can
+# remove these events from the dataset.
 
-#arrays = ['ASAR']
-##ev_types = ['Weird_events', 'Unusable_events']
-#ev_types = ['Unusable_events']
-#
-#for array_nm in arrays:
-#    for fband in fbs:
-#        for ev_type in ev_types:
-#
-#            figs = glob('/nfs/a9/eeinga/Results/' + network + '/EFM/QT_plots/' \
-#                       + array_nm + '/' + fband + '/' + ev_type + '/*')
-#
-#            fig_ev_dates = []
-#            for fig in figs:
-#                ev_date = fig[-30:-15]
-#                fig_ev_dates.append(ev_date)
-#
-#            dirs = glob('/nfs/a9/eeinga/Data/' + data_source + '/' + network \
-#                       + '/' + array_nm + '/SAC/GQ_SAC/' + fband + '/*')
-#            dest = '/nfs/a9/eeinga/Data/' + data_source + '/' + network + '/' \
-#                   + array_nm + '/SAC/' + ev_type + '/' + fband + '/'
-#
-#            for directory in dirs:
-#                ev_date = directory[-15:]
-#                if ev_date in fig_ev_dates:
-#                    move(directory, dest)
-#
-#
-## Sanity check:
-#for array_nm in arrays:
-#    for fband in fbs:
-#
-#        unusable = glob('/nfs/a9/eeinga/Data/' + data_source + '/' + network \
-#                         + '/' + array_nm + '/SAC/Unusable_events/' + fband \
-#                         + '/*')
-#        u_figs = glob('/nfs/a9/eeinga/Results/' + network + '/EFM/QT_plots/' \
-#                         + array_nm + '/' + fband + '/Unusable_events/*')
-#
-#        dir_ev_dates = []
-#        for directory in unusable:
-#            dir_ev_dates.append(directory[-15:])
-#
-#        for fig in u_figs:
-#            fig_ev_date = fig[-30:-15]
-#            if fig_ev_date not in dir_ev_dates:
-#                print('Event on ' +  fig_ev_date + ' for fband ' + fband \
+# arrays = ['']
+# ev_types = ['Unusable_events'] # You can define more than one type
+
+# for array_nm in arrays:
+#     for fband in fbs:
+#         for ev_type in ev_types:
+
+#             # List of figures stored in ev_type directory:
+#             figs = glob('/path/to/ev_type/directory/*')
+
+#             fig_ev_dates = []
+#             for fig in figs:
+#                 # Get event date from figure file name:
+#                 ev_date = fig[-30:-15]
+#                 # Add it to list of events:
+#                 fig_ev_dates.append(ev_date)
+
+#             # Define path to GQ events directory for this array and fband:
+#             dirs = glob('/path/to/GQ/events/data/directory/for/this/fband/*')
+#             # Define destination where weird or unusable events data will be
+#             #saved:
+#             dest = '/path/to/unusable/events/data/directory/for/this/fband/'
+
+#             # Move all traces for weird or unusable events to dest:
+#             for directory in dirs:
+#                 ev_date = directory[-15:]
+#                 if ev_date in fig_ev_dates:
+#                     move(directory, dest)
+
+# # Sanity check:
+# for array_nm in arrays:
+#     for fband in fbs:
+
+#         unusable = glob('/path/to/unusable/events/data/directory/for/this/fband/*')
+#         u_figs = glob('/path/to/unusable/events/figures/for/this/fband/*')
+
+#         # Get event dates from unusable event data directories:
+#         dir_ev_dates = []
+#         for directory in unusable:
+#             dir_ev_dates.append(directory[-15:])
+
+#         # Compare event dates in GQ data directories for all fbands with dates
+#         # on dir_ev_dates:
+#         for fig in u_figs:
+#             fig_ev_date = fig[-30:-15]
+#             if fig_ev_date not in dir_ev_dates:
+#                 print('Event on ' +  fig_ev_date + ' for fband ' + fband \
 #                       + ' should be in Unusable events directory')
-#
-#
-#        if len(u_figs)  != len(unusable):
-#            print('Something went wrong for fband ' + fband + '!')
-#        else:
-#            print('Number of dirs in Unusable_events for fband ' + fband \
+
+#         if len(u_figs)  != len(unusable):
+#             print('Something went wrong for fband ' + fband + '!')
+#         else:
+#             print('Number of dirs in Unusable_events for fband ' + fband \
 #                   + ' is correct! Well done!')
-#
-#        #        weird = glob('/nfs/a9/eeinga/Data/' + data_source + '/' \
-#                               + network + '/' + array_nm + '/SAC/Weird_events/' \
-#                               + fband + '/*')
-#        #        w_figs = glob('/nfs/a9/eeinga/Results/' + network \
-#                               + '/EFM/QT_plots/' + array_nm + '/' + fband \
-#                               + '/Weird_events/*')
-#        #
-#        #        if len(w_figs) !=len(weird):
-#        #            print('Something went wrong!')
-#        #        else:
-#        #            print('Number of dirs in weird_events is correct! Well done!')
-#
-#
+
+
 
 
 

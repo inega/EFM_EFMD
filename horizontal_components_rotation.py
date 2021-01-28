@@ -173,34 +173,6 @@ for directory in sac_dirs:
                     print('Traces for event on ' + str(st[0].stats.starttime+120) \
                           + ' , station ' + st[0].stats.station \
                           + ', successfully rotated!')
-                    # This seems to work!
-
-                    # SANITY CHECK PLOT:
-                    #        plt.figure()
-                    #        for trace in st3:
-                    #            if trace.stats.channel == 'BHR':
-                    #                plot(trace.data + 1e-6, 'k',
-                    #                      label = 'OBSPY ' + trace.stats.station \
-                    #                      + ' ' + trace.stats.channel)
-                    #            if trace.stats.channel == 'BHT':
-                    #                plot(trace.data, 'b', label = 'OBSPY ' \
-                    #                      + trace.stats.station + ' ' \
-                    #                      + trace.stats.channel)
-                    #        for trace in st_rt:
-                    #            if trace.stats.channel == 'BHR':
-                    #                plot(trace.data + 1e-6, 'g--',
-                    #                      label = 'MANUAL ' + trace.stats.station \
-                    #                      + ' ' + trace.stats.channel)
-                    #            if trace.stats.channel == 'BHT':
-                    #                plot(trace.data, 'r--', label = 'MANUAL ' \
-                    #                      + trace.stats.station + ' ' \
-                    #                      + trace.stats.channel)
-                    #        plt.axis([27223,28394,-0.7e-6,1.8e-6])
-                    #        plt.legend(loc = 'upper right')
-                    #        plt.grid()
-                    #        plt.title('12-NE = ((BH1*cos,-BH2*sin),(BH1*sin,BH2*cos)) \
-                    #                  , NE-RT = ((-BHE*cos,-BHN*sin),\
-                    #                  (BHE*sin,-BHN*cos))')
 
                 except:
 

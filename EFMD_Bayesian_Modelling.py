@@ -548,22 +548,15 @@ def EFMD_Bayesian_modelling (array_nm, fbands, units, delta, Q_i, N_iters,
                                                      cfs, inv_Qi_vals, inv_Qds,
                                                      parameter = parameter)
 
-    # RM string:
-    RM_str = ''
+    # RM string, 9-95 percentile range string, MLM model string:
+    RM_str = ''; RM_percs_str = ''; MLM_str = ''
+
     for i in range(num_layers - 1, N, 1):
-        RM_str += '[' + str(np.round(RM[i][0]/1000, 3)) + ', ' \
+        RM_str += '[' + str(np.round(RM[i][0] / 1000, 3)) + ', ' \
                   + str(np.round(100 * RM[i][1], 3)) + ']'
-
-    # RM string:
-    RM_percs_str = ''
-    for i in range(num_layers - 1, N, 1):
-        RM_percs_str += '[' + str(np.round(RM_percs[i][0]/1000, 3)) + ', ' \
+        RM_percs_str += '[' + str(np.round(RM_percs[i][0] / 1000, 3)) + ', ' \
                         + str(np.round(100 * RM_percs[i][1], 3)) + ']'
-
-    # MLM model string:
-    MLM_str = ''
-    for i in range(num_layers - 1, N, 1):
-        MLM_str += '[' + str(np.round(MLM[i][0]/1000, 3)) + ', ' \
+        MLM_str += '[' + str(np.round(MLM[i][0] / 1000, 3)) + ', ' \
                     + str(np.round(100*MLM[i][1], 3)) + ']'
 
     # Print input model, best_fitting_model and misfit to screen:
@@ -874,23 +867,16 @@ def EFMD_combine_results (array_nm, fbands, units, delta, Q_i, scattering_layer,
                                                      cfs, inv_Qi_vals, inv_Qds,
                                                      parameter)
 
-    # RM string:
-    RM_str = ''
+    # RM string, 9-95 percentile range string, MLM model string:
+    RM_str = ''; RM_percs_str = ''; MLM_str = ''
+
     for i in range(num_layers - 1, N, 1):
-        RM_str += '[' + str(np.round(RM[i][0]/1000, 3)) + ', ' \
+        RM_str += '[' + str(np.round(RM[i][0] / 1000, 3)) + ', ' \
                   + str(np.round(100 * RM[i][1], 3)) + ']'
-
-    # RM string:
-    RM_percs_str = ''
-    for i in range(num_layers - 1, N, 1):
-        RM_percs_str += '[' + str(np.round(RM_percs[i][0]/1000, 4)) + ', ' \
-        + str(np.round(100 * RM_percs[i][1], 4)) + ']'
-
-    # MLM model string:
-    MLM_str = ''
-    for i in range(num_layers - 1, N, 1):
-        MLM_str += '[' + str(np.round(MLM[i][0]/1000, 3)) + ', ' \
-                   + str(np.round(100*MLM[i][1], 3)) + ']'
+        RM_percs_str += '[' + str(np.round(RM_percs[i][0] / 1000, 3)) + ', ' \
+                        + str(np.round(100 * RM_percs[i][1], 3)) + ']'
+        MLM_str += '[' + str(np.round(MLM[i][0] / 1000, 3)) + ', ' \
+                    + str(np.round(100*MLM[i][1], 3)) + ']'
 
     # Print input model, best_fitting_model and misfit to screen:
     if syn_test == True:
