@@ -70,51 +70,24 @@ Velocity data:
 
 Extra/auxiliary functions are stored in these files:
 
-    EFM_EFMD_tools.py
-	-create_stream
-	-create_stream_EFM
-	-normalize_traces
-	-datetime_string
-	-stream_plotting_trim_stack
+    EFM_EFMD_tools.py - functions to create streams of traces and do basic processing/plotting
+			and other auxiliary functions
     
-    trace_alignment.py
-	-align_stream_fk
-	-align_stream_3c_fk
-	-stack_single
-	
-    fk_analysis.py
-	-fk_slowness_vector                       
-	-get_timeshifts                        
-	-get_array_coordinates
-	-get_rel_station_coordinates_degs
-	-get_rel_station_coordinates_km
-	-get_Pwave_arrivals
+    trace_alignment.py - functions to align traces within a stream and stack them
 
-    V_models                                   
-	-get_velocity_model
-	-get_velocity_data
-	
-    EFM
-	-EFM_get_envelopes, EFM_analysis
+    fk_analysis.py - functions to carry out an FK analysis, get array geometry and/or get 
+		     theoretical P wave arrivals
+   
+    V_models - functions to load velocity data and create the EFM/EFMD velocity model
+
+    EFM - core functions of the EFM
       
-    F_EFM
-	-create_nce3c_EFM
-	-lin_misfits
-	-linear_least_squares
-	-EFM_misfits
-	-EFM_least_squares
-	-QiQd_misfits
-	-QiQd_least_squares
-	-plot_envelopes
+    F_EFM - auxiliary functions for the EFM
 
-    EFMD_Bayesian_modelling
-	-EFMD_Bayesian_modelling
-	-EFMD_combine_results
-	
-    F_EFMD
-      -EFMD_plot_results_summary
-      -EFMD_plot_results_summary_simple
-      -EFMD_plot_x_histograms
+    EFMD_Bayesian_modelling - core functions of the EFMD
+
+    F_EFMD - auxiliary functions for the EFMD
+
       
       
       
