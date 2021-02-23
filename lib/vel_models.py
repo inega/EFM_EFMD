@@ -21,6 +21,7 @@ def get_velocity_data(array_nm, vel_source, vel_model_fname):
     Arguments:
         - array_nm: (str) code name for the array
         - vel_source: (str) name of the velocity data source
+        - vel_model_fname: (str) file name and path of velocity data (csv file)
 
     Output:
         - List with crust and lithosphere thickness and two numpy arrays
