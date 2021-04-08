@@ -63,10 +63,10 @@ for st_nm in st_names:
     # I could download and store the inventory in the HD, but in this case I
     # am only keeping it in memory and using it.
 
-    # In case there is a subarray (optional):
-    inv = client.get_stations(network = network, station = st_nm,
-                              starttime = t1, endtime = t2, level = 'response')
-    print(inv)
+    # Get station metadata:
+    inv = client.get_stations( network = network, station = st_nm,
+                              starttime = t1, endtime = t2, level = 'response' )
+    print( inv )
 
     inv_fname = path + 'station_inventory_' + network + '_' + array_nm + '.xml'
     if not os.path.exists(path): os.makedirs(path)
@@ -172,30 +172,33 @@ for st_nm in st_names:
 
         try:
             # The client.get_waveforms requires:
-            # ('Network', 'Station', 'Location', 'Channel', t1, t2)
+            # ( 'Network', 'Station', 'Location', 'Channel', t1, t2 )
             # We can use '*' to download from all stations and locations or
             # select just one
-            st = client.get_waveforms(network = network, station = st_nm,
+            st = client.get_waveforms( network = network, station = st_nm,
                                       channel = channel, location = location,
                                       starttime = ev_preset[i],
                                       endtime = ev_offset[i],
-                                      attach_response = True)# This step takes
+                                      attach_response = True )# This step takes
                                                               # a long time!
+            try:
+                # Remove instrument response from the signals:
+                # st.remove_response( pre_filt = pre_filt, inventory = inv,
+                #                     zero_mean = True, taper = True )
+                print( 'Length of stream for event on ', str( ev_time[i] ),
+                      ' is ', len( st ))
+                lengths.append( len( st ))
+                # Save stream object into a file:
+                file_path = path + 'WVF/'
+                if not os.path.exists( file_path): os.makedirs( file_path)
+                filename = file_path + 'wvf_' + str( t_str[i] ) + '_' + network \
+                           + '_' + array_nm + '.mseed'
+                st.write( filename, format = 'MSEED' )
+            except:
+                print( 'Instrument response for event on ' + t_str[i] \
+                      + 'could not be removed or file could not be saved...' )
         except:
-            print('No data could be downloaded for event on ' + t_str[i])
-        try:
-            print('Length of stream for event on ', str(ev_time[i]),
-                  ' is ', len(st))
-            lengths.append(len(st))
-            # Save stream object into a file:
-            file_path = path + 'WVF/'
-            if not os.path.exists(file_path): os.makedirs(file_path)
-            filename = file_path + 'wvf_' + str(t_str[i]) + '_' + network \
-                       + '_' + array_nm + '.mseed'
-            st.write(filename, format = 'MSEED')
-        except:
-            print('Instrument response for event on ' + t_str[i] \
-                  + 'could not be removed or file could not be saved...')
+            print( 'No data could be downloaded for event on ' + t_str[i] )
 
 
 ###############################################################################
