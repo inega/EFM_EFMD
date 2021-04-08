@@ -11,7 +11,7 @@ Steps:
     seismodelling_env.yml file can be used for this step.
 
 1 - Download data. The inv_cat_and_wvf_downloader.py script can be used to download event
-    and stations metadata from IRIS, as well as waveforms in wvf format. Instrument response
+    and stations metadata from IRIS, as well as waveforms in mseed format. Instrument response
     can be removed from the data during either in this step or the next.
     
 2 - Convert waveforms to SAC format and add event information to SAC headers and stats.
