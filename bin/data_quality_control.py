@@ -403,17 +403,17 @@ def QT_sanity_check_EFM(network, array_nm, gq_sac_path, plots_path, inv_path,
 # I want to time how long it took for the script to run:
 sttime = datetime.now()
 
-# Define network, frequency band names and data components:
+# Define network, array name and data source:
 network = ''
-fbs = ['A','B','C','D','E','F','G','H']
-comps = ['Z','T','R']
-
-# Define array name and data source:
 array_nm = ''
 data_source = ''
-comp = 'Z'
-vel_source = ''
-units = 'm'
+
+# Start of the period of interest:
+# starttime = UTCDateTime('2018-01-01T00:00:00')
+
+# Define frequency band names and data components:
+fbs = ['A','B','C','D','E','F','G','H']
+comps = ['Z','T','R']
 
 # Define needed paths: a) path to the main directory where all our data and
 # directories are; b) path to the directories where our raw SAC data live (we
@@ -423,25 +423,16 @@ main_path = '/path/to/parent/directory/where/our/data/live/'
 raw_sac_paths = glob(main_path + 'SAC/raw_SAC*/')
 plots_path = main_path + 'SAC/QT_plots/'
 
-fband = 'D'
-
-# Directories we need to avoid:
-bad_dirs = [main_path + 'SAC/raw_SAC_BU/']
-print(' ')
-
 # Run QT:
-for rsp in raw_sac_paths:
+for raw_sac_path in raw_sac_paths:
 
-    if rsp not in bad_dirs:
-        raw_sac_path = rsp
+    print(network)
+    print(array_nm)
+    print(raw_sac_path)
 
-        print(network)
-        print(array_nm)
-        print(raw_sac_path)
-
-        for fband in fbs:
-            SNR = quality_test_EFM(network, array_nm, data_source, main_path,
-                                    raw_sac_path, fband)
+    for fband in fbs:
+        SNR = quality_test_EFM(network, array_nm, data_source, main_path,
+                                raw_sac_path, fband)
 
 print('It took the quality control function ' + str(datetime.now() - sttime) \
       + ' s to run')
@@ -453,10 +444,11 @@ gq_sac_path = main_path + 'SAC/GQ_SAC/'
 inv_path = main_path + 'station_inventory_' + network + '_' + array_nm + '.xml'
 num_layers = 1 #Not really important, we only need the one-way travel time
                # through the lithosphere, which barely changes
+
 # Define component, velocity model source, model type and units. We need
 # these to get the velocity model data.
 comp = 'Z'
-vel_source = 'AuSREM'
+vel_source = ''
 units = 'm'
 # Path and file name of the file containing the velocity data: the format of
 # this file is in the README file.
