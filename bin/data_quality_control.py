@@ -11,17 +11,16 @@ Created on Dec 10, 2017
 
 '''
 
-import os
-import copy
-import pickle
 import numpy as np
 from glob import glob
+import os, copy, pickle
 from datetime import datetime
-from shutil import move as move
-from vel_models import get_velocity_model
+import matplotlib.pyplot as plt
+from obspy.taup import TauPyModel
 from fk_analysis import get_Pwave_arrivals
+from EFM_EFMD_tools import datetime_string
 from obspy import UTCDateTime, read, Stream
-from EFM_EFMD_tools import create_stream_EFM, datetime_string, stream_plotting_trim_stack
+
 
 
 
@@ -322,8 +321,10 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
 
 
 
-def QT_sanity_check_EFM(network, array_nm, gq_sac_path, plots_path, inv_path,
-                        vel_source, vel_model_fname, fband, num_layers):
+
+
+
+def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, comp = 'all'):
 
     '''
     Plot a section for each event  with good quality data to check that the
@@ -335,68 +336,103 @@ def QT_sanity_check_EFM(network, array_nm, gq_sac_path, plots_path, inv_path,
     stream of filtered, trimmed and aligned traces and then plot it.
 
     Arguments:
-        -network (str): name of the network the stations are part of (for path).
         -array_nm (str): name of the array the stations are part of (for path).
         -gq_sac_path (str): path to the specific directory where our quality
                             controlled sac files are.
         -plots_path (str): path to the directory the plots will be saved into.
-        -inv_path (str): file name and path of the inventory file with info
-                        about stations locations.
-        -fband (str): frequency band we want to filter the data into.
-        -num_layers (int): number of layers in the lithospheric model (not
-                           important, required only to get the one-way
-                           traveltime through the lithosphere).
+        -comp (str): component(s) to plot in the figures either single component ('Z', 'R'
+                     or 'T') or 'all' to plot all traces. Default is 'all'.
 
         Output:
-            -Section plots for each event and frequency band are saved into a
-            separate directory.
+            -Plots of traces recorded for each event, station and channel are saved into a
+             directory.
     '''
 
     #                           GET RAW SAC FILES                             #
 
     # List of all directories inside the gq_sac_path directory:
-    dirs = glob(gq_sac_path + fband + '/*/')
+    dirs = glob( gq_sac_path + fband + '/*/')
     N = len(dirs)
     print('Number of events with good quality data is ' + str(N))
+    print('')
 
     # Get tJ from the get_velocity_model function.
-    vel_model = get_velocity_model(array_nm, vel_source, vel_model_fname, num_layers,
-                       units = 'm')
-    tJ = vel_model['tJ']
+    # vel_model = get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
+                       # units = 'm')
+    # tJ = vel_model['tJ']
 
+    # Choose model to calculate theoretical traveltimes:
+    model = TauPyModel( model = 'prem')
+    
     for directory in dirs:
 
         ev_date = directory[-16:-1]
-        print(' ============================================================ ')
-        print(' ')
         print('         Event date : ' + ev_date + ', ' + fband + '          ')
-        print(' ')
 
-        try:
+        # Plot normalised, non-aligned traces just to double check the quality of the 
+        # data and that there are no secondary arrivals in our time window of interest.
+        
+        # Create figure:
+        f, ax = plt.subplots (figsize = (20, 10))
+        
+        # Load files:
+        if comp == 'all': files = glob (directory + '*.SAC')
+        if comp != 'all':
+            files = glob (directory + '*' + comp + '*.SAC')
+            
+        chans = []
+        for i, file in enumerate(files):
+            st = read (file)
+            st.filter ('bandpass', freqmin = 0.25, freqmax = 7.7, corners = 2, 
+                       zerophase = True)
+            tr = st[0]
+            chans.append (tr.stats.station + ', ' + tr.stats.channel)
+            
+            # Plot traces:
+            ax.plot (tr.times(), tr.data/tr.data.max() + i, 'k', linewidth = 0.8)
+        
+        # Get theoretical arrival times:
+        arrs = []; arr_times = []
+        ev_date = UTCDateTime( ev_date )# Data from 2 minutes BEFORE the event!
+        dist_degs = tr.stats.sac.gcarc # distance to event in degrees
+        ev_dep = tr.stats.sac.evdp / 1000 # depth in km
+        # We are only interested in P wave arrivals:
+        arrivals = model.get_travel_times (source_depth_in_km = ev_dep,
+                                           distance_in_degree = dist_degs)
+        for i, arrival in enumerate(arrivals):
+            if i < 10:
+                arrs.append (arrival.name)
+                arr_times.append (arrival.time + 120)
+            
+        # Plot theoretical arrivals:
+        colors = ['red', 'orange', 'limegreen', 'cornflowerblue', 'darkviolet', 'coral',
+                  'gold', 'olive', 'darkcyan', 'fuchsia']
+        for i in range(len(arrs)):
+            ax.axvline (arr_times[i], linewidth = 1.5, color = colors[i], label = arrs[i])
 
-            # Create stream: this step may fail because some events have less
-            # than 5-6 good traces.
-            stream = create_stream_EFM(array_nm, ev_date, directory, comp,
-                                       fband, tJ, fname = None)
-
-            import matplotlib.pyplot as plt
-            for tr in stream:
-                plt.plot(tr.data, 'k', linewidth = 0.8)
-            ###
-            # Plot section:
-            full_plots_path = plots_path + array_nm + '/' + fband + '/'
-            fname = full_plots_path + array_nm + '_' + ev_date + '_Z_QT_check.png'
-            if not os.path.exists(full_plots_path):
-                os.makedirs(full_plots_path)
-            stream_plotting_trim_stack(array_nm, ev_date, stream, comp, tJ,
-                                       filename = fname, show_plots = False)
-
-        except:
-            pass
-
+        ax.set_yticks([0, 1, 2])
+        ax.set_yticklabels (chans, fontsize = 14)
+        ax.tick_params (axis = 'x', labelsize = 14)
+        ax.grid (linestyle = 'dashed')
+        ax.legend (loc = 'upper left', fontsize = 14)
+        ax.set_xlim ([arr_times[0]-50, arr_times[0]+300])
+        ax.set_xlabel ('Time (s)', fontsize = 16)
+        ax.set_title (str(ev_date) + ', ' + array_nm, fontsize = 18)
+        
+        # Save figure:
+        if not os.path.exists (plots_path): os.makedirs (plots_path)
+        fname = plots_path + array_nm + '_' + directory[-16:-1] + '.png'
+        f.savefig ( fname, bbox_inches = 'tight')
+        plt.close('all')
+    
+  
 ###############################################################################
 ####                    END OF THE FUNCTION                                ####
 ###############################################################################
+
+
+
+
 
 
 
@@ -438,26 +474,16 @@ print('It took the quality control function ' + str(datetime.now() - sttime) \
       + ' s to run')
 
 
-# Run sanity check:
+# Run sanity check: this function plots the 1-comp or 3-comp traces for each good quality
+# event and saves them to the specified directory:
 print('Running sanity check...')
 gq_sac_path = main_path + 'SAC/GQ_SAC/'
-inv_path = main_path + 'station_inventory_' + network + '_' + array_nm + '.xml'
-num_layers = 1 #Not really important, we only need the one-way travel time
-               # through the lithosphere, which barely changes
+plots_path = main_path + 'SAC/QT_plots/'
 
-# Define component, velocity model source, model type and units. We need
-# these to get the velocity model data.
-comp = 'Z'
-vel_source = ''
-units = 'm'
-# Path and file name of the file containing the velocity data: the format of
-# this file is in the README file.
-vel_model_fname = '/path/to/file/with/velocity/data.csv'
-for fband in fbs:
-    QT_sanity_check_EFM(network, array_nm, gq_sac_path, plots_path, inv_path,
-                        vel_source, vel_model_fname, fband, num_layers)
+QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, comp = 'all')
 
 print('It took the whole script ' + str(datetime.now() - sttime) + ' to run')
+
 
 
 

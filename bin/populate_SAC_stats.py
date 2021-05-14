@@ -208,8 +208,6 @@ for q in range(N):
                                                         'kstnm': stn_name,
                                                         'kcmpnm': channel,
                                                         'ko': event_time,
-                                                        't0': wvf_starttime,
-                                                        't1': wvf_endtime,
                                                         'delta': delta,
                                                         'user1': calib,
                                                         'npts': npts,
