@@ -1770,8 +1770,7 @@ def EFMD_plot_results(array_nm, fbands, units, vel_model, dataset,
 
 
 
-
-def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
+def EFMD_plot_results_summary ( array_nm, fbands, units, vel_model,
                                EFMD_results, figs_fname, scattering_layer,
                                parameter, syn_test = False, comb_results = False,
                                showplots = False):
@@ -1841,10 +1840,10 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
     '''
 
     # Extract needed results from EFMD_results:
-    kept_logliks = np.array(EFMD_results['kept_logliks'])
+    kept_logliks = np.array( EFMD_results['kept_logliks'] )
     if comb_results == True:
         logliks_all = EFMD_results['logliks_all']
-        num_chains = len(logliks_all)
+        num_chains = len( logliks_all)
     else:
         num_chains = 1
         logliks_all = kept_logliks
@@ -1871,14 +1870,14 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
         s_nces_std[fband] = dataset[array_nm][fband]['s_nces_std']
 
     # Get layer bottoms from velocity model:
-    L = np.array(vel_model['L'])
+    L = np.array( vel_model['L'] )
     num_layers = vel_model['num_layers']
 
     # Create layer labels for plots:
     if scattering_layer == 'all': scat_layer_label = ''
     else: scat_layer_label = 'L' + str(scattering_layer) + '_scattering'
 
-    layers_plot_labels = str(num_layers) + ' layers model, '
+    layers_plot_labels = str( num_layers) + ' layers model, '
 
     if syn_test == True:
         if scat_layer_label != '':
@@ -1887,22 +1886,22 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
     layers_plot_labels = layers_plot_labels + 'layer bottoms at '
 
     for i, val in enumerate(L):
-        if units == 'm': rval = np.round(val/1000, 2)
+        if units == 'm': rval = np.round( val/1000, 2)
         else: rval = val
 
         if len(L) == 1:
-            layers_plot_labels = layers_plot_labels + str(rval) + ' km'
+            layers_plot_labels = layers_plot_labels + str( rval ) + ' km'
         elif len(L)>=2 and val != L[-1] and val != L[-2]:
-            layers_plot_labels = layers_plot_labels + str(rval) + ', '
+            layers_plot_labels = layers_plot_labels + str( rval ) + ', '
         elif len(L)>=2 and val == L[-2]:
-            layers_plot_labels = layers_plot_labels + str(rval)
+            layers_plot_labels = layers_plot_labels + str( rval )
         else:
-            layers_plot_labels = layers_plot_labels + ' and ' +str(rval) + ' km'
+            layers_plot_labels = layers_plot_labels + ' and ' +str( rval ) + ' km'
 
     layer_labels = []; plot_layer_labels = []
     for i in range(num_layers):
-        layer_labels.append('L' + str(i+1))
-        plot_layer_labels.append('Layer ' + str(i+1))
+        layer_labels.append( 'L' + str(i+1) )
+        plot_layer_labels.append( 'Layer ' + str(i+1) )
 
     ###########################################################################
 
@@ -1913,18 +1912,22 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
     else: lcolor = 'dodgerblue' #'dimgray'
 
     # Text sizes:
-    if num_layers != 3:
+    if num_layers == 1:
+        major_text_size = 18
+        minor_text_size = 16
+        legend_text_size = 14
+    elif num_layers == 2:
+        major_text_size = 16
+        minor_text_size = 14
+        legend_text_size = 12
+    else:
         major_text_size = 14
         minor_text_size = 12
-        legend_text_size = 10
-    else:
-        major_text_size = 11
-        minor_text_size = 9
-        legend_text_size = 9
+        legend_text_size = 12
 
     # Spacing between subplots:
     verspace = 0.15
-    if num_layers != 1: horspace = 0.3
+    if num_layers != 1: horspace = 0.38
     else: horspace = verspace
 
     # Figure dimensions:
@@ -1934,18 +1937,18 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
         dimx = 15; dimy = 10
 
     # Create text labels for the subplots:
-    tlabels = list(string.ascii_lowercase)
+    tlabels = list( string.ascii_lowercase)
 
     # Create empty variable to host axes numbers:
     axnum = 0
 
     # Create figure:
-    f = plt.figure(constrained_layout = False, figsize = (dimx, dimy))
+    f = plt.figure( constrained_layout = False, figsize = ( dimx, dimy))
 
-    if len(fbands) == 8: gs = GridSpec (len(fbands), 4*(num_layers) +4,
+    if len(fbands) == 8: gs = GridSpec ( len(fbands), 4*(num_layers) +4,
                                         figure = f, wspace = horspace,
                                         hspace = verspace)
-    elif len(fbands) == 5: gs = GridSpec (len(fbands)*2, 4*(num_layers) +4,
+    elif len(fbands) == 5: gs = GridSpec ( len(fbands)*2, 4*(num_layers) +4,
                                           figure = f, wspace = horspace,
                                           hspace = verspace)
 
@@ -1954,19 +1957,19 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
     # Plot loglikelihoods for all combined chains:
     chains_axes = []
     #ylabels = ['Posterior', 'probability', 'exponent']
-    ax00 = f.add_subplot(gs[:num_chains, :-4])
+    ax00 = f.add_subplot( gs[:num_chains, :-4])
     ax00.tick_params(labelcolor='w', axis = 'both', which = 'both',
                      direction = 'in', length = 0, color = 'white', top=False,
                      bottom=False, left=False, right=False)
 
-    if len(fbands) == 8 and syn_test == False: pad_val = 50
-    elif syn_test == False and num_layers == 1: pad_val = 55
-    else: pad_val = 15
+    if len(fbands) == 8 and syn_test == False and num_layers != 1: pad_val = 60
+    elif syn_test == False and num_layers == 1: pad_val = 80
+    else: pad_val = 25
 
     if num_chains > 3: ax00_label = 'Posterior probability exponent'
     else: ax00_label = 'Posterior probability\n exponent'
 
-    ax00.set_ylabel(ax00_label, labelpad = pad_val, fontsize = major_text_size)
+    ax00.set_ylabel( ax00_label, labelpad = pad_val, fontsize = major_text_size)
     ax00.spines['top'].set_color('none')
     ax00.spines['bottom'].set_color('none')
     ax00.spines['left'].set_color('none')
@@ -1977,46 +1980,46 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
     else:
         num_ticks = 4
 
-    for w in range(num_chains):
+    for w in range( num_chains):
 
         if w == 0:
-            ax = f.add_subplot(gs[w,:-4])
-            chains_axes.append(ax)
+            ax = f.add_subplot( gs[w,:-4])
+            chains_axes.append( ax)
         else:
-            ax = f.add_subplot(gs[w,:-4], sharex = chains_axes[0])
-            chains_axes.append(ax)
+            ax = f.add_subplot( gs[w,:-4], sharex = chains_axes[0])
+            chains_axes.append( ax)
 
             # Add axis to axnum:
             axnum += 1
 
-        ax.plot(-logliks_all[w], color = 'maroon', linewidth = 2)
+        ax.plot( -logliks_all[w], color = 'maroon', linewidth = 2)
 
         ax.grid()
-        ax.tick_params(axis = 'both', which = 'major', bottom = False,
+        ax.tick_params( axis = 'both', which = 'major', bottom = False,
                        right = False, labelsize = minor_text_size)
         ax.xaxis.tick_top()
-        ax.xaxis.set_major_locator(plt.MaxNLocator(num_ticks))
+        ax.xaxis.set_major_locator(plt.MaxNLocator( num_ticks))
 
         if w != 0:
-            plt.setp(ax.get_xticklabels(), visible = False)
+            plt.setp( ax.get_xticklabels(), visible = False)
             if syn_test == False and num_layers == 1 and array_nm == 'PSA':
-                ax.yaxis.set_major_formatter(FormatStrFormatter('%.2e'))
+                ax.yaxis.set_major_formatter( FormatStrFormatter('%.2e'))
         else:
-            ax.set_title('Number of accepted models', fontsize = major_text_size)
-            ax.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            ax.set_title( 'Number of accepted models', fontsize = major_text_size)
+            ax.xaxis.set_major_formatter( FormatStrFormatter('%.0f'))
             if syn_test == False and num_layers == 1 and array_nm == 'PSA':
-                ax.yaxis.set_major_formatter(FormatStrFormatter('%.2e'))
+                ax.yaxis.set_major_formatter( FormatStrFormatter('%.2e'))
         if syn_test == False and num_layers == 1 and array_nm == 'ASAR':
             ax.set_ylim([-11050, -10450])
 
         # Place text label inside the subplot:
-        if num_layers == 1: xy = (0.015, 0.1)
+        if num_layers == 1: xy = (0.010, 0.087)
         elif num_layers == 2:
-            if len(fbands) == 8: xy = (0.01, 0.135)
-            else: xy = (0.01, 0.17)
-        elif num_layers == 3: xy = (0.0085, 0.125)
-        ax.annotate(tlabels[axnum], xy = xy, xycoords = 'axes fraction',
-                    bbox = dict(facecolor = 'white', alpha = 0.7),
+            if len(fbands) == 8: xy = (0.007, 0.131)
+            else: xy = (0.007, 0.155)
+        elif num_layers == 3: xy = (0.007, 0.122)
+        ax.annotate( tlabels[axnum], xy = xy, xycoords = 'axes fraction',
+                    bbox = dict( facecolor = 'white', alpha = 0.7),
                     fontsize = major_text_size, color = 'k')
 
     ###########################################################################
@@ -2031,7 +2034,7 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
     if scat_layer_label == '':
         scat_layer = scat_layer_label
 
-    for k in range(num_layers):
+    for k in range( num_layers):
 
         key = layer_labels[k]
         lab = plot_layer_labels[k]
@@ -2049,102 +2052,102 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
 
         # Plot 1D histogram for the RMS velocity fluctuations:
         if len(fbands) == 8:
-            ax0 = f.add_subplot(gs[num_chains:-1, 0 + plot_factor])
+            ax0 = f.add_subplot( gs[ num_chains:-1, 0 + plot_factor])
         elif len(fbands) == 5:
-            ax0 = f.add_subplot(gs[num_chains:-2, 0 + plot_factor])
+            ax0 = f.add_subplot( gs[ num_chains:-2, 0 + plot_factor])
 
         # Plot 9-95 percentiles:
-        ax0.axhspan(RM_percs[m][1, 0]*100, RM_percs[m][1, 1]*100,
+        ax0.axhspan( RM_percs[m][1, 0]*100, RM_percs[m][1, 1]*100,
                     color = 'rosybrown', alpha = 0.2)
 
         # Plot histogram:
-        ax0.hist(E_perc[key], bins = num_bins, color = 'darkred',
+        ax0.hist( E_perc[key], bins = num_bins, color = 'darkred',
                  orientation = 'horizontal')
 
         # Draw horizontal line with the input and representative models values
         # of the parameter:
         if syn_test == True:
-             ax0.axhline(input_model[m][1]*100, color = lcolor, linewidth = 3,
+             ax0.axhline( input_model[m][1]*100, color = lcolor, linewidth = 3,
                          linestyle = (0, (0.1, 2)), dash_capstyle = 'round',
                          label = 'Input value', alpha = 0.8)
 
         # Define axes:
         ax0.invert_xaxis()
         ax0.set_xticklabels([])
-        ax0.tick_params(axis='x', which='both', bottom=False, top=False,
+        ax0.tick_params( axis='x', which='both', bottom=False, top=False,
                         labelbottom=False)
-        if k == 0: ax0.set_ylabel('RMS Velocity Fluctuations (%)',
-                                  fontsize = major_text_size)
+        if k == 0: ax0.set_ylabel( 'RMS Velocity Fluctuations (%)',
+                                  fontsize = major_text_size )
 
         if (syn_test == False and num_layers == 1):
             if array_nm == 'PSA':
                 ax0.set_yscale('log')
-                ax0.set_ylim([0.0045, 0.0089])
-                ax0.set_yticks(np.array([0.005, 0.006, 0.007, 0.008]))
-                ax0.yaxis.set_major_formatter(FormatStrFormatter('%.3f'))
+                ax0.set_ylim([ 0.0045, 0.0089])
+                ax0.set_yticks( np.array([0.005, 0.006, 0.007, 0.008]))
+                ax0.yaxis.set_major_formatter( FormatStrFormatter( '%.3f') )
             else:
                 ax0.set_yscale('log')
-                ax0.set_ylim([0.0045, 1.05])
-                ax0.set_yticks(np.array([0.005, 0.01, 0.05, 0.1, 0.5]))
-                ax0.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+                ax0.set_ylim([ 0.0045, 1.05])
+                ax0.set_yticks( np.array([ 0.005, 0.01, 0.05, 0.1, 0.5]))
+                ax0.yaxis.set_major_formatter( FormatStrFormatter( '%.2f') )
 
-        elif (syn_test == False and num_layers == 2 and len(fbands) == 8):
+        elif ( syn_test == False and num_layers == 2 and len(fbands) == 8):
             ax0.set_yscale('log')
-            ax0.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-            ax0.set_yticks(np.array([0.01, 0.05, 0.1, 0.5, 1.0]))
+            ax0.yaxis.set_major_formatter( FormatStrFormatter( '%.2f') )
+            ax0.set_yticks( np.array([0.01, 0.05, 0.1, 0.5, 1.0]))
             # ax0.xaxis.set_major_locator(plt.MaxNLocator(4))
 
         elif syn_test == True and num_layers == 1:
-            ax0.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-            ax0.set_ylim([4.96, 5.04])
+            ax0.yaxis.set_major_formatter( FormatStrFormatter('%.3f') )
+            # ax0.set_ylim([ 4.995, 5.04])
 
-        elif (syn_test == False and num_layers == 2 and len(fbands) == 5 \
-              and array_nm == 'PSA') or (syn_test == True and num_layers == 3) or \
-            (syn_test == True and num_layers == 2):
-            ax0.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+        elif ( syn_test == False and num_layers == 2 and len(fbands) == 5 \
+              and array_nm == 'PSA') or ( syn_test == True and num_layers == 3) or \
+            ( syn_test == True and num_layers == 2):
+            ax0.yaxis.set_major_formatter( FormatStrFormatter('%.1f') )
 
-        elif (syn_test == True and num_layers == 2 \
+        elif ( syn_test == True and num_layers == 2 \
               and 'L1' in scat_layer_label and k == 0):
             ax0.set_ylim([6.68, 7.12])
-            ax0.axes.get_yaxis().set_ticks([6.7, 6.8, 6.9, 7.0, 7.1])
+            ax0.axes.get_yaxis().set_ticks( [6.7, 6.8, 6.9, 7.0, 7.1])
 
-        elif (syn_test == True and num_layers == 2 \
+        elif ( syn_test == True and num_layers == 2 \
               and 'L2' in scat_layer_label and k == 1):
-            ax0.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+            ax0.yaxis.set_major_formatter( FormatStrFormatter( '%.2f') )
             # ax0.xaxis.set_major_locator(plt.MaxNLocator(5))
             ax0.set_ylim([6.978, 7.012])
-            ax0.axes.get_yaxis().set_ticks([6.980, 6.990, 7.000, 7.010])
+            ax0.axes.get_yaxis().set_ticks( [6.980, 6.990, 7.000, 7.010])
 
-        elif (syn_test == True and num_layers == 2 and scat_layer_label == '' \
+        elif ( syn_test == True and num_layers == 2 and scat_layer_label == '' \
               and k == 1):
             ax0.set_ylim([3.78, 4.22])
-            ax0.axes.get_yaxis().set_ticks([3.8, 3.9, 4.0, 4.1, 4.2])
+            ax0.axes.get_yaxis().set_ticks( [3.8, 3.9, 4.0, 4.1, 4.2])
 
-        else: ax0.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+        else: ax0.yaxis.set_major_formatter( FormatStrFormatter('%.0f') )
 
         ax0.grid()
-        ax0.tick_params(axis = 'y', which = 'both', left = True, right = True,
-                        labelsize = minor_text_size, pad = 0.5)
+        ax0.tick_params( axis = 'y', which = 'both', left = True, right = True,
+                        labelsize = minor_text_size, pad = 0.5 )
 
         # Add axis to axnum:
         axnum += 1
 
         # Place text label inside the subplot:
-        if num_layers == 1: xy = (0.065, 0.02)
+        if num_layers == 1: xy = (0.049, 0.018)
         elif num_layers == 2:
             if scat_layer == 'L1' and k == 0:
-                xy = (0.1, 0.94)
+                xy = (0.07, 0.938)
             elif scat_layer == 'L2' or syn_test == False:
-                xy = (0.1, 0.94)
+                xy = (0.07, 0.938)
             else:
-                xy = (0.1, 0.03)
+                xy = (0.070, 0.028)
         elif num_layers == 3:
-            if k != 2: xy = (0.125, 0.028)
-            else: xy = (0.125, 0.95)
+            if k != 2: xy = (0.121, 0.026)
+            else: xy = (0.121, 0.946)
 
-        ax0.annotate(tlabels[axnum], xy = xy,
+        ax0.annotate( tlabels[axnum], xy = xy,
                      xycoords = 'axes fraction',
-                     bbox = dict(facecolor = 'white', alpha = 0.7),
+                     bbox = dict( facecolor = 'white', alpha = 0.7),
                      fontsize = major_text_size, color = 'k')
 
         # Get ax0 box limits (left, bottom, width, height):
@@ -2154,31 +2157,32 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
 
         # Plot 2D histogram of the structural parameters:
         if len(fbands) == 8:
-            ax1 = f.add_subplot(gs[num_chains:-1,
+            ax1 = f.add_subplot( gs[ num_chains:-1,
                                 (1 + plot_factor):(4 + plot_factor)],
                                 sharey = ax0)# 2D histogram
         elif len(fbands) == 5:
-            ax1 = f.add_subplot(gs[num_chains:-2,
+            ax1 = f.add_subplot( gs[ num_chains:-2,
                                 (1 + plot_factor):(4 + plot_factor)],
                                 sharey = ax0)# 2D histogram
 
         # Plot 9-95 percentiles:
-        ax1.axvspan(RM_percs[m][0, 0]/1000, RM_percs[m][0, 1]/1000,
+        ax1.axvspan( RM_percs[m][0, 0]/1000, RM_percs[m][0, 1]/1000,
                     color = 'rosybrown', alpha = 0.2)
-        ax1.axhspan(RM_percs[m][1, 0]*100, RM_percs[m][1, 1]*100,
+        ax1.axhspan( RM_percs[m][1, 0]*100, RM_percs[m][1, 1]*100,
                     color = 'rosybrown', alpha = 0.2)
 
         if syn_test == True:
-            ax1.axvline(input_model[m][0]/1000, color = lcolor, linewidth = 3,
+            ax1.axvline( input_model[m][0]/1000, color = lcolor, linewidth = 3,
                         linestyle = (0, (0.1, 2)), dash_capstyle = 'round',
                         label = 'Input value', alpha = 0.8)
-            ax1.axhline(input_model[m][1]*100, color = lcolor, linewidth = 3,
+            ax1.axhline( input_model[m][1]*100, color = lcolor, linewidth = 3,
                         linestyle = (0, (0.1, 2)), dash_capstyle = 'round',
                         alpha = 0.8)
 
         # Legend:
         if (syn_test == False and num_layers == 2 and len(fbands) == 8) or \
-            (syn_test == False and num_layers == 1 and array_nm == 'ASAR'):
+            (syn_test == False and num_layers == 1 and array_nm == 'ASAR') or \
+            (syn_test == True and num_layers == 3 and k != 2):
             leg_loc = 'center right'
         elif (syn_test == True and 'L1' in scat_layer_label and k == 1) or \
             (syn_test == True and num_layers == 3 and k == 2) or \
@@ -2187,30 +2191,29 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
         elif (syn_test == True and num_layers == 2 and scat_layer_label == ''):
               leg_loc = 'lower left'
         elif (syn_test == True and 'L1' in scat_layer_label and k == 0) or \
-            (syn_test == True and 'L2' in scat_layer_label) or \
-            (syn_test == True and num_layers == 3 and k != 2):
+            (syn_test == True and 'L2' in scat_layer_label):
             leg_loc = 'upper right'
         else:
             leg_loc = 'lower right'
 
-        ax1.legend(loc = leg_loc, title = lab, title_fontsize = minor_text_size,
+        ax1.legend( loc = leg_loc, title = lab, title_fontsize = minor_text_size,
                        fontsize = legend_text_size)
 
         # Plot histogram:
-        if units == 'km': im = ax1.hist2d(a[key], E_perc[key], bins = num_bins,
+        if units == 'km': im = ax1.hist2d( a[key], E_perc[key], bins = num_bins,
                                           norm = mpl.colors.LogNorm(),
-                                          cmap = 'afmhot_r')
-        else: im = ax1.hist2d(a_km[key], E_perc[key], bins = num_bins,
+                                          cmap = 'afmhot_r' )
+        else: im = ax1.hist2d( a_km[key], E_perc[key], bins = num_bins,
                               cmap = 'afmhot_r', norm = mpl.colors.LogNorm())
 
         # Set x axis scale to log:
-        if (syn_test == False and num_layers == 2) or \
-            (syn_test == False and num_layers == 3) or \
-            (syn_test == True and num_layers == 3) or \
-            (syn_test == True and 'L1' in scat_layer_label and k == 1) or \
-            (syn_test == True and 'L2' in scat_layer_label and k == 0):
+        if ( syn_test == False and num_layers == 2) or \
+            ( syn_test == False and num_layers == 3) or \
+            ( syn_test == True and num_layers == 3) or \
+            ( syn_test == True and 'L1' in scat_layer_label and k == 1 ) or \
+            ( syn_test == True and 'L2' in scat_layer_label and k == 0 ):
             ax1.set_xscale('log')
-            ax1.set_xticks(np.array([1, 5, 10, 20]))
+            ax1.set_xticks( np.array([ 1, 5, 10, 20]))
         else:
             ax1.xaxis.set_major_locator(plt.MaxNLocator(4))
 
@@ -2218,47 +2221,47 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
         if (syn_test == False and num_layers == 1):
             # ax1.set_yscale('log')
             if array_nm == 'PSA':
-                ax1.set_xlim([10, 32])
-                ax1.set_ylim([0.0045, 0.0089])
-                ax1.set_yticks(np.array([0.005, 0.006, 0.007, 0.008]))
+                ax1.set_xlim([ 10, 32])
+                ax1.set_ylim([ 0.0045, 0.0089])
+                ax1.set_yticks( np.array([0.005, 0.006, 0.007, 0.008]))
             else:
-                ax1.set_ylim([0.0045, 1.05])
-                ax1.set_yticks(np.array([0.005, 0.01, 0.05, 0.1, 0.5]))
+                ax1.set_ylim([ 0.0045, 1.05])
+                ax1.set_yticks( np.array([ 0.005, 0.01, 0.05, 0.1, 0.5]))
 
 
         elif (syn_test == False and num_layers == 2 and len(fbands) == 8):
             ax1.set_yscale('log')
-            ax1.set_yticks(np.array([0.01, 0.05, 0.1, 0.5, 1.0]))
-            ax1.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+            ax1.set_yticks( np.array([0.01, 0.05, 0.1, 0.5, 1.0]))
+            ax1.yaxis.set_major_formatter( FormatStrFormatter( '%.2f') )
 
-        elif (syn_test == True and num_layers == 2 and scat_layer_label == '' \
+        elif ( syn_test == True and num_layers == 2 and scat_layer_label == '' \
               and k == 1):
             ax1.set_ylim([3.78, 4.22])
             # ax1.yaxis.set_major_locator(plt.MaxNLocator(4))
-            ax1.axes.get_yaxis().set_ticks([3.8, 3.9, 4.0, 4.1, 4.2])
+            ax1.axes.get_yaxis().set_ticks( [3.8, 3.9, 4.0, 4.1, 4.2])
 
-        elif (syn_test == True and num_layers == 2 and 'L1' in scat_layer_label \
+        elif ( syn_test == True and num_layers == 2 and 'L1' in scat_layer_label \
               and k == 0):
             ax1.set_ylim([6.68, 7.12])
-            ax1.axes.get_yaxis().set_ticks([6.7, 6.8, 6.9, 7.0, 7.1])
+            ax1.axes.get_yaxis().set_ticks( [6.7, 6.8, 6.9, 7.0, 7.1])
 
-        elif (syn_test == True and num_layers == 2 and 'L2' in scat_layer_label \
+        elif ( syn_test == True and num_layers == 2 and 'L2' in scat_layer_label \
               and k == 1):
-            ax1.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+            ax1.yaxis.set_major_formatter( FormatStrFormatter( '%.2f') )
             # ax0.xaxis.set_major_locator(plt.MaxNLocator(5))
             ax1.set_ylim([6.978, 7.012])
-            ax1.axes.get_yaxis().set_ticks([6.980, 6.990, 7.000, 7.010])
+            ax1.axes.get_yaxis().set_ticks( [6.980, 6.990, 7.000, 7.010])
         elif (syn_test == True and num_layers == 1):
-            ax1.set_ylim([4.96, 5.04])
-            ax1.set_xlim([4.7, 5.2])
-            # ax1.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
+            # ax1.set_ylim([ 4.96, 5.04])
+            # ax1.set_xlim([ 4.7, 5.2])
+            # ax1.yaxis.set_major_formatter( FormatStrFormatter( '%.2f') )
             ax1.yaxis.set_major_locator(plt.MaxNLocator(4))
 
         # Remove axes ticks labels:
-        ax1.tick_params(axis = 'both', which = 'both', left = True, right = False,
+        ax1.tick_params( axis = 'both', which = 'both', left = True, right = False,
                         top = False, bottom = True, labelbottom = False,
                         labelleft = False)
-        ax1.grid(axis = 'both', which = 'major')
+        ax1.grid( axis = 'both', which = 'major')
 
         # Define location of the colorbar inside the plot:
         if (syn_test == True and 'L2' in scat_layer_label) \
@@ -2272,34 +2275,34 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
         cbaxes = inset_axes(ax1, width = "90%", height = "5%", loc = cbar_loc)
         plt.colorbar(im[3], ax = ax1, cax=cbaxes, ticks = [10**1, 10**3, 10**5, 10**7],
                      orientation='horizontal')
-        cbaxes.set_xlabel(xlabel = 'Frequency (counts)', fontsize = major_text_size)
+        cbaxes.set_xlabel( xlabel = 'Frequency (counts)', fontsize = major_text_size )
         if cbar_loc == 'lower center':
             cbaxes.xaxis.set_ticks_position('top')
             cbaxes.xaxis.set_label_position('top')
-        cbaxes.tick_params(axis = 'both', labelsize = minor_text_size)
+        cbaxes.tick_params( axis = 'both', labelsize = minor_text_size )
 
         # Add axis to axnum:
         axnum += 1
 
         # Place text label inside the subplot:
-        if num_layers == 1: xy = (0.025, 0.02)
+        if num_layers == 1: xy = (0.014, 0.018)
         elif num_layers == 2:
             if scat_layer == 'L1':
-                if k == 0: xy = (0.03, 0.94)
-                if k == 1: xy = (0.03, 0.03)
+                if k == 0: xy = (0.027, 0.939)
+                if k == 1: xy = (0.025, 0.028)
             elif scat_layer == 'L2':
-                xy = (0.03, 0.94)
+                xy = (0.023, 0.938)
             elif syn_test == False:
-                xy = (0.03, 0.03)
+                xy = (0.021, 0.028)
             else:
-                xy = (0.925, 0.03)
+                xy = (0.928, 0.029)
         elif num_layers == 3:
-            if k != 2: xy = (0.038, 0.95)
-            else: xy = (0.038, 0.028)
+            if k != 2: xy = (0.029, 0.946)
+            else: xy = (0.029, 0.026)
 
-        ax1.annotate(tlabels[axnum], xy = xy,
+        ax1.annotate( tlabels[axnum], xy = xy,
                     xycoords = 'axes fraction',
-                    bbox = dict(facecolor = 'white', alpha = 0.7),
+                    bbox = dict( facecolor = 'white', alpha = 0.7),
                     fontsize = major_text_size, color = 'k')
 
         # I need to move the 2D histograms and corr. length histograms for
@@ -2308,39 +2311,39 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
         ax1_l, ax1_b, ax1_w, ax1_h = ax1.get_position().bounds
 
         if num_layers == 2:
-            if k == 0: ax1.set_position([ax1_l - 0.008, ax1_b, ax1_w, ax1_h])
+            if k == 0: ax1.set_position([ ax1_l - 0.008, ax1_b, ax1_w, ax1_h])
             elif k == 1:
-                ax0.set_position([ax1_l - 0.008 - ax0_w, ax0_b, ax0_w, ax0_h])
+                ax0.set_position([ ax1_l - 0.008 - ax0_w, ax0_b, ax0_w, ax0_h])
         if num_layers == 3:
-            if k == 0: ax1.set_position([ax1_l - 0.007, ax1_b, ax1_w, ax1_h])
+            if k == 0: ax1.set_position([ ax1_l - 0.007, ax1_b, ax1_w, ax1_h])
             elif k == 1:
-                ax0.set_position([ax1_l - 0.0075 - ax0_w, ax0_b, ax0_w, ax0_h])
-                ax1.set_position([ax1_l - 0.0035, ax1_b, ax1_w, ax1_h])
+                ax0.set_position([ ax1_l - 0.0075 - ax0_w, ax0_b, ax0_w, ax0_h])
+                ax1.set_position([ ax1_l - 0.0035, ax1_b, ax1_w, ax1_h])
             elif k == 2:
-                ax0.set_position([ax1_l - 0.004 - ax0_w, ax0_b, ax0_w, ax0_h])
+                ax0.set_position([ ax1_l - 0.004 - ax0_w, ax0_b, ax0_w, ax0_h])
 
         #######################################################################
 
         # Plot 1D histogram for the correlation length:
 
         if len(fbands) == 8:
-            ax2 = f.add_subplot(gs[-1, (1 + plot_factor):(4 + plot_factor)],
+            ax2 = f.add_subplot( gs[-1, (1 + plot_factor):(4 + plot_factor)],
                                 sharex = ax1)
         elif len(fbands) == 5:
-            ax2 = f.add_subplot(gs[-2:, (1 + plot_factor):(4 + plot_factor)],
+            ax2 = f.add_subplot( gs[-2:, (1 + plot_factor):(4 + plot_factor)],
                                 sharex = ax1)
 
         # 5-95 percentiles:
-        ax2.axvspan(RM_percs[m][0, 0]/1000, RM_percs[m][0, 1]/1000,
+        ax2.axvspan( RM_percs[m][0, 0]/1000, RM_percs[m][0, 1]/1000,
                     color = 'rosybrown', alpha = 0.2)
 
-        if units == 'km': ax2.hist(a[key], bins = num_bins, color = 'maroon')
-        else: ax2.hist(a_km[key], bins = num_bins, color = 'maroon')
+        if units == 'km': ax2.hist( a[key], bins = num_bins, color = 'maroon')
+        else: ax2.hist( a_km[key], bins = num_bins, color = 'maroon')
 
         # Plot vertical lines for the input model and representative model values
         # of the parameter:
         if syn_test == True:
-            ax2.axvline(input_model[m][0]/1000, color = lcolor, linewidth = 3,
+            ax2.axvline( input_model[m][0]/1000, color = lcolor, linewidth = 3,
                         linestyle = (0, (0.1, 2)), dash_capstyle = 'round',
                         label = 'Input value', alpha = 0.8)
 
@@ -2348,46 +2351,51 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
         ax2.invert_yaxis()
         ax2.set_yticklabels([])
         # Set x axis scale to log:
-        if (syn_test == False  and num_layers == 2) or \
-            (syn_test == False and num_layers == 3) or \
-            (syn_test == True and num_layers == 3) or \
-            (syn_test == True and 'L1' in scat_layer_label and k == 1) or \
-            (syn_test == True and 'L2' in scat_layer_label and k == 0):
+        if ( syn_test == False  and num_layers == 2) or \
+            ( syn_test == False and num_layers == 3) or \
+            ( syn_test == True and num_layers == 3) or \
+            ( syn_test == True and 'L1' in scat_layer_label and k == 1 ) or \
+            ( syn_test == True and 'L2' in scat_layer_label and k == 0 ):
             ax2.set_xscale('log')
-            ax2.set_xticks(np.array([1, 5, 10, 20]))
-            ax2.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            ax2.set_xticks( np.array([ 1, 5, 10, 20]))
+            ax2.xaxis.set_major_formatter( FormatStrFormatter('%.0f') )
         elif syn_test == True and scat_layer == 'L2' and k == 1:
-            ax2.set_xlim (0.990, 1.010)
+            ax2.set_xlim ( 0.990, 1.010)
             ax2.xaxis.set_major_locator(plt.MaxNLocator(3))
-            ax2.xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
-        elif (syn_test == True and num_layers == 1):
-            ax2.set_xlim([4.7, 5.2])
+            ax2.xaxis.set_major_formatter( FormatStrFormatter('%.2f') )
+        # elif (syn_test == True and num_layers == 1):
+            # ax2.set_xlim([ 4.7, 5.2])
         else:
             ax2.xaxis.set_major_locator(plt.MaxNLocator(4))
-        ax2.set_xlabel('Correlation length (km)', fontsize = major_text_size)
-        ax2.tick_params(axis='y', which='both', left=False, right=False)
-        ax2.tick_params(axis = 'x', which='both', bottom = True, top = True,
-                        labelbottom = True, labelsize = minor_text_size)
+        ax2.set_xlabel( 'Correlation length (km)', fontsize = major_text_size)
+        ax2.tick_params( axis='y', which='both', left=False, right=False)
+        ax2.tick_params( axis = 'x', which='both', bottom = True, top = True,
+                        labelbottom = True, labelsize = minor_text_size )
 
         if syn_test == False and num_layers == 1 and array_nm == 'PSA':
-            ax1.set_xlim([10, 32])
+            ax1.set_xlim([ 10, 32])
 
-        ax2.grid(which = 'major', axis = 'x')
+        ax2.grid( which = 'major', axis = 'x')
 
         # Add axis to axnum:
         axnum += 1
 
         # Place text label inside the subplot:
-        if num_layers == 1: xy = (0.025, 0.1)
+        if num_layers == 1: xy = (0.014, 0.083)
         elif num_layers == 2:
-            if scat_layer == '' and syn_test == True: xy = (0.945, 0.135)
-            elif syn_test == False: xy = (0.03, 0.08)
-            else: xy = (0.03, 0.135)
-        elif num_layers == 3: xy = (0.038, 0.12)
+            if scat_layer == '' and syn_test == True: 
+                if k == 0: xy = (0.953, 0.125)
+                elif k == 1: xy = (0.955, 0.125)
+            elif syn_test == False and len(fbands) == 8: xy = (0.021, 0.125)
+            elif syn_test == False and len(fbands) == 5: xy = (0.021, 0.070)
+            else: 
+                if k == 0: xy = (0.026, 0.125)
+                elif k == 1: xy = (0.024, 0.125)
+        elif num_layers == 3: xy = (0.029, 0.115)
 
-        ax2.annotate(tlabels[axnum], xy = xy,
+        ax2.annotate( tlabels[axnum], xy = xy,
                      xycoords = 'axes fraction',
-                     bbox = dict(facecolor = 'white', alpha = 0.7),
+                     bbox = dict( facecolor = 'white', alpha = 0.7),
                      fontsize = major_text_size, color = 'k')
 
         # I need to move the 2D histograms and corr. length histograms for
@@ -2396,52 +2404,52 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
 
         if num_layers == 2:
             if k == 0:
-                ax2.set_position([ax2_l - 0.008, ax2_b, ax2_w, ax2_h])
+                ax2.set_position([ ax2_l - 0.008, ax2_b, ax2_w, ax2_h])
         if num_layers == 3:
-            if k == 0: ax2.set_position([ax2_l - 0.007, ax2_b, ax2_w, ax2_h])
-            elif k == 1: ax2.set_position([ax2_l - 0.0035, ax2_b, ax2_w, ax2_h])
+            if k == 0: ax2.set_position([ ax2_l - 0.007, ax2_b, ax2_w, ax2_h])
+            elif k == 1: ax2.set_position([ ax2_l - 0.0035, ax2_b, ax2_w, ax2_h])
 
     ###########################################################################
 
-    # Plot 2D histograms of the synthetic envelopes, (synthetic or real)data
+    # Plot 2D histograms of the synthetic envelopes, (synthetic or real )data
     # envelopes and RM envelopes:
 
     # Define time vector (it doesn't matter which frequency we use, the data
     # envelopes should all be equally long):
-    t = np.arange(0, len(s_nces['H'])) * delta
+    t = np.arange(0, len( s_nces['H'] )) * delta
 
-    for i, fband in enumerate(fbands):
+    for i, fband in enumerate( fbands):
 
-        if len(fbands) == 8: ax = f.add_subplot(gs[i, -4:])
-        elif len(fbands) == 5: ax = f.add_subplot(gs[2*i:2*i+2, -4:])
+        if len(fbands) == 8: ax = f.add_subplot( gs[ i, -4:])
+        elif len(fbands) == 5: ax = f.add_subplot( gs[ 2*i:2*i+2, -4:])
 
-        ax.axvspan(t[DW_end_inds[fband]], t[-150], color = 'rosybrown',
+        ax.axvspan( t[DW_end_inds[fband]], t[-150], color = 'rosybrown',
                    alpha = 0.3)
-        im = ax.contourf(t, hist_range, hists_2D_syn_envs[fband],
+        im = ax.contourf( t, hist_range, hists_2D_syn_envs[fband],
                          norm = mpl.colors.LogNorm(), cmap = 'afmhot_r')
         if i == 0:
             if syn_test == True:
-                ax.plot(t, s_nces[fband], color = lcolor, linewidth = 3,
+                ax.plot( t, s_nces[fband], color = lcolor, linewidth = 3,
                         linestyle = (0, (0.1, 2)), dash_capstyle = 'round',
                         alpha = 0.9, label =  'Input data')
             else:
-                ax.plot(t, s_nces[fband], color = lcolor, linewidth = 1.5,
+                ax.plot( t, s_nces[fband], color = lcolor, linewidth = 1.5,
                         alpha = 0.8, label =  'Data')
 
         else:
             if syn_test == True:
-                ax.plot(t, s_nces[fband], color = lcolor, linewidth = 3,
+                ax.plot( t, s_nces[fband], color = lcolor, linewidth = 3,
                         alpha = 0.9, linestyle = (0, (0.1, 2)),
                         dash_capstyle = 'round',)
             else:
-                ax.plot(t, s_nces[fband], color = lcolor, linewidth = 1.5,
-                        alpha = 0.8)
+                ax.plot( t, s_nces[fband], color = lcolor, linewidth = 1.5,
+                        alpha = 0.8 )
 
        # Axes:
         if fband != 'H':
             ax.set_xticklabels([])
         else:
-            ax.set_xlabel('Time (s)', fontsize = major_text_size)
+            ax.set_xlabel( 'Time (s)', fontsize = major_text_size )
         ax.set_yticklabels([])
 
         if syn_test == True:
@@ -2453,24 +2461,24 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
                 else: ax.set_ylim(0, 0.5)
 
             elif num_layers == 3:
-                ax.set_ylim(0, 0.4)
+                ax.set_ylim( 0, 0.4)
         else:
-            if num_layers == 2 or (num_layers != 1 and array_nm != 'WRA'):
+            if num_layers == 2 or ( num_layers != 1 and array_nm != 'WRA'):
                 ax.set_ylim(0, 0.3)
             elif num_layers == 1:
                 ax.set_ylim(0, 0.5)
             elif num_layers == 3 and array_nm == 'WRA':
-                ax.set_ylim(0, 0.5)
-        ax.set_xlim(20, t[-1])
+                ax.set_ylim( 0, 0.5)
+        ax.set_xlim( 20, t[-1])
 
-        ax.tick_params(axis = 'both', labelsize = minor_text_size)
-        ax.tick_params(axis='y', which='both', left=False, right=False,
+        ax.tick_params( axis = 'both', labelsize = minor_text_size )
+        ax.tick_params( axis='y', which='both', left=False, right=False,
                        labelbottom=False)
 
         # Grid and legend:
         ax.grid()
         leg_title = str(fbands[fband][0]) + ' to ' + str(fbands[fband][1]) + ' Hz'
-        ax.legend(loc = 'upper left', fancybox = True, ncol = 2, framealpha = 0.55,
+        ax.legend( loc = 'upper left', fancybox = True, ncol = 2, framealpha = 0.55,
                   title = leg_title, columnspacing = 1, title_fontsize = minor_text_size,
                   handlelength = 1, labelspacing = 0.05, fontsize = legend_text_size)
 
@@ -2479,17 +2487,17 @@ def EFMD_plot_results_summary (array_nm, fbands, units, vel_model,
         plt.colorbar(im, ax = ax, cax = cbaxes,
                      ticks = [10**1, 10**4, 10**7], orientation = 'vertical')
         cbaxes.yaxis.set_ticks_position('left')
-        cbaxes.tick_params(axis = 'both', labelsize = minor_text_size)
+        cbaxes.tick_params( axis = 'both', labelsize = minor_text_size )
 
         # Place text label inside the subplot:
-        if num_layers == 1: xy = (0.015, 0.1)
-        elif num_layers == 2 and len(fbands) == 8: xy = (0.022, 0.14)
-        elif num_layers == 2 and len(fbands) == 5: xy = (0.02, 0.08)
-        elif num_layers == 3: xy = xy = (0.028, 0.125)
+        if num_layers == 1: xy = (0.010, 0.083)
+        elif num_layers == 2 and len(fbands) == 8: xy = (0.016, 0.125)
+        elif num_layers == 2 and len(fbands) == 5: xy = (0.016, 0.070)
+        elif num_layers == 3: xy = xy = (0.021, 0.115)
 
-        ax.annotate(tlabels[w + (num_layers*3) + i + 1], xy = xy,
+        ax.annotate( tlabels[w + (num_layers*3) + i + 1], xy = xy,
                      xycoords = 'axes fraction',
-                     bbox = dict(facecolor = 'white', alpha = 0.7),
+                     bbox = dict( facecolor = 'white', alpha = 0.7),
                      fontsize = major_text_size, color = 'k')
 
     figname = figs_fname + '_FULL_RESULTS_SUMMARY.'
