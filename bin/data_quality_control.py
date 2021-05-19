@@ -11,6 +11,7 @@ Created on Dec 10, 2017
 
 '''
 
+import shutil
 import numpy as np
 from glob import glob
 import os, copy, pickle
@@ -324,7 +325,7 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
 
 
 
-def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, comp = 'all'):
+def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, fband, comp = 'all'):
 
     '''
     Plot a section for each event  with good quality data to check that the
@@ -356,10 +357,8 @@ def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, comp = 'all'):
     print('Number of events with good quality data is ' + str(N))
     print('')
 
-    # Get tJ from the get_velocity_model function.
-    # vel_model = get_velocity_model( array_nm, vel_source, vel_model_fname, num_layers,
-                       # units = 'm')
-    # tJ = vel_model['tJ']
+    fbands = {'A':[0.5,1], 'B':[0.75,1.5], 'C':[1,2], 'D':[1.5,3],
+              'E':[2,4], 'F':[2.5,5], 'G':[3,6], 'H':[3.5,7]}
 
     # Choose model to calculate theoretical traveltimes:
     model = TauPyModel( model = 'prem')
@@ -383,26 +382,32 @@ def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, comp = 'all'):
         chans = []
         for i, file in enumerate(files):
             st = read (file)
-            st.filter ('bandpass', freqmin = 0.25, freqmax = 7.7, corners = 2, 
-                       zerophase = True)
+            st.filter ('bandpass', freqmin = fbands[fband][0], freqmax = fbands[fband][1], 
+                       corners = 2, zerophase = True)
             tr = st[0]
+            srate = tr.stats.sampling_rate
             chans.append (tr.stats.station + ', ' + tr.stats.channel)
             
+            # Get theoretical arrival times:
+            if i == 0:
+                arrs = []; arr_times = []
+                ev_date = UTCDateTime( ev_date )# Data from 2 minutes BEFORE the event!
+                dist_degs = tr.stats.sac.gcarc # distance to event in degrees
+                ev_dep = tr.stats.sac.evdp / 1000 # depth in km
+                # We are only interested in P wave arrivals:
+                arrivals = model.get_travel_times (source_depth_in_km = ev_dep,
+                                                   distance_in_degree = dist_degs)
+                for j, arrival in enumerate(arrivals):
+                    if j < 10:
+                        arrs.append (arrival.name)
+                        arr_times.append (arrival.time + 120)
+                    
+            t_P = arr_times[0]
+            t_P_ind = ( np.abs( tr.times() - t_P) ).argmin()
+            
             # Plot traces:
-            ax.plot (tr.times(), tr.data/tr.data.max() + i, 'k', linewidth = 0.8)
-        
-        # Get theoretical arrival times:
-        arrs = []; arr_times = []
-        ev_date = UTCDateTime( ev_date )# Data from 2 minutes BEFORE the event!
-        dist_degs = tr.stats.sac.gcarc # distance to event in degrees
-        ev_dep = tr.stats.sac.evdp / 1000 # depth in km
-        # We are only interested in P wave arrivals:
-        arrivals = model.get_travel_times (source_depth_in_km = ev_dep,
-                                           distance_in_degree = dist_degs)
-        for i, arrival in enumerate(arrivals):
-            if i < 10:
-                arrs.append (arrival.name)
-                arr_times.append (arrival.time + 120)
+            tr_max = np.max (np.abs (tr.data[int(t_P_ind - 25*srate):int(t_P_ind + 100*srate)]))
+            ax.plot (tr.times(), (tr.data/tr_max) + i, 'k', linewidth = 0.8)
             
         # Plot theoretical arrivals:
         colors = ['red', 'orange', 'limegreen', 'cornflowerblue', 'darkviolet', 'coral',
@@ -415,13 +420,14 @@ def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, comp = 'all'):
         ax.tick_params (axis = 'x', labelsize = 14)
         ax.grid (linestyle = 'dashed')
         ax.legend (loc = 'upper left', fontsize = 14)
-        ax.set_xlim ([arr_times[0]-50, arr_times[0]+300])
+        ax.set_xlim ([t_P-50, t_P+250])
+        ax.set_ylim ([-tr_max-1.1, tr_max + len(files)*1.1])
         ax.set_xlabel ('Time (s)', fontsize = 16)
         ax.set_title (str(ev_date) + ', ' + array_nm, fontsize = 18)
         
         # Save figure:
-        if not os.path.exists (plots_path): os.makedirs (plots_path)
-        fname = plots_path + array_nm + '_' + directory[-16:-1] + '.png'
+        if not os.path.exists (plots_path + fband + '/'): os.makedirs (plots_path + fband + '/')
+        fname = plots_path + fband + '/' + array_nm + '_' + directory[-16:-1] + '.png'
         f.savefig ( fname, bbox_inches = 'tight')
         plt.close('all')
     
@@ -429,7 +435,6 @@ def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, comp = 'all'):
 ###############################################################################
 ####                    END OF THE FUNCTION                                ####
 ###############################################################################
-
 
 
 
@@ -480,81 +485,63 @@ print('Running sanity check...')
 gq_sac_path = main_path + 'SAC/GQ_SAC/'
 plots_path = main_path + 'SAC/QT_plots/'
 
-QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, comp = 'all')
-
+for fband in fbs:
+    print( 'Frequency band: ' + fband)
+    QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, fband, comp = 'all')
+    
 print('It took the whole script ' + str(datetime.now() - sttime) + ' to run')
-
-
 
 
 
 ###############################################################################
 
-#     RUN THIS PART OF THE CODE ONLY AFTER MANUALLY INSPECTING THE PLOTS      #
+# #     RUN THIS PART OF THE CODE ONLY AFTER MANUALLY INSPECTING THE PLOTS      #
 
-# It is highly recommended to manually check ALL the plots created by the functions
-# above to get rid of bad events that may have passed the initial quality control.
-# E.g. events with a smaller event within the time window of interest, clear
-# secondary arrivals (PcP, etc) and events that we won't be able to use for
-# whatever reasons.
-# Move the section plots to an "Unusable events" directory so the code below can
-# remove these events from the dataset.
+# # It is highly recommended to manually check ALL the plots created by the function
+# # above to get rid of bad events that may have passed the initial quality control.
+# # Move the plots to an "Unusable events" directory within the SAC directory so the code 
+# # below can remove these events from the dataset.
 
-# arrays = ['']
-# ev_types = ['Unusable_events'] # You can define more than one type
+# for fband in fbs:
 
-# for array_nm in arrays:
-#     for fband in fbs:
-#         for ev_type in ev_types:
+#     figs = glob (main_path + 'SAC/Unusable_events/' + fband + '/*')
 
-#             # List of figures stored in ev_type directory:
-#             figs = glob('/path/to/ev_type/directory/*')
+#     fig_ev_dates = []
+#     for fig in figs:
+#         ev_date = fig[-19:-4]
+#         fig_ev_dates.append(ev_date)
 
-#             fig_ev_dates = []
-#             for fig in figs:
-#                 # Get event date from figure file name:
-#                 ev_date = fig[-30:-15]
-#                 # Add it to list of events:
-#                 fig_ev_dates.append(ev_date)
+#     dirs = glob( main_path + '/SAC/GQ_SAC/' + fband + '/*')
+#     dest = main_path + 'SAC/Unusable_events/' + fband + '/'
 
-#             # Define path to GQ events directory for this array and fband:
-#             dirs = glob('/path/to/GQ/events/data/directory/for/this/fband/*')
-#             # Define destination where weird or unusable events data will be
-#             #saved:
-#             dest = '/path/to/unusable/events/data/directory/for/this/fband/'
+#     for directory in dirs:
+#         ev_date = directory[-15:]
+#         if ev_date in fig_ev_dates:
+#             shutil.move( directory, dest)
 
-#             # Move all traces for weird or unusable events to dest:
-#             for directory in dirs:
-#                 ev_date = directory[-15:]
-#                 if ev_date in fig_ev_dates:
-#                     move(directory, dest)
 
 # # Sanity check:
-# for array_nm in arrays:
-#     for fband in fbs:
+# for fband in fbs:
 
-#         unusable = glob('/path/to/unusable/events/data/directory/for/this/fband/*')
-#         u_figs = glob('/path/to/unusable/events/figures/for/this/fband/*')
+#     unusable_figs = glob( main_path + 'SAC/Unusable_events/' + fband + '/*.png')
+#     unusable_dirs = glob( main_path + 'SAC/Unusable_events/' + fband + '/*/')
 
-#         # Get event dates from unusable event data directories:
-#         dir_ev_dates = []
-#         for directory in unusable:
-#             dir_ev_dates.append(directory[-15:])
+#     dir_ev_dates = []
+#     for directory in unusable_dirs:
+#         dir_ev_dates.append( directory[-16:-1] )
 
-#         # Compare event dates in GQ data directories for all fbands with dates
-#         # on dir_ev_dates:
-#         for fig in u_figs:
-#             fig_ev_date = fig[-30:-15]
-#             if fig_ev_date not in dir_ev_dates:
-#                 print('Event on ' +  fig_ev_date + ' for fband ' + fband \
-#                       + ' should be in Unusable events directory')
+#     for fig in unusable_figs:
+#         fig_ev_date = fig[-19:-4]
+#         if fig_ev_date not in dir_ev_dates:
+#             print('Event on ' +  fig_ev_date + ' for fband ' + fband \
+#                   + ' should be in Unusable events directory')
 
-#         if len(u_figs)  != len(unusable):
-#             print('Something went wrong for fband ' + fband + '!')
-#         else:
-#             print('Number of dirs in Unusable_events for fband ' + fband \
-#                   + ' is correct! Well done!')
 
+#     if len(unusable_figs) != len(unusable_dirs):
+#         print('Something went wrong for fband ' + fband + '!')
+#     else:
+#         print('Number of dirs in Unusable_events for fband ' + fband \
+#               + ' is correct! Well done!')
 
 
 

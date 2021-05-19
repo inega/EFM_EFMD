@@ -34,7 +34,6 @@ main_path = '/path/to/parent/directory/where/our/downloaded/data/live'
 
 # Starting date and time of period of interest:
 t_str = ''
-t1 = UTCDateTime(t_str)
 
 #################       READ STATION INVENTORY           ######################
 
@@ -208,6 +207,8 @@ for q in range(N):
                                                         'kstnm': stn_name,
                                                         'kcmpnm': channel,
                                                         'ko': event_time,
+                                                        't0': starttime,
+                                                        't1': endtime,
                                                         'delta': delta,
                                                         'user1': calib,
                                                         'npts': npts,
@@ -237,8 +238,9 @@ for q in range(N):
                     pass
 
     except:
-        print('Wrong instrument response!')
-    
+            if len( st) == 0: print ('Stream for this event has 0 traces...')
+            else: print ('Wrong instrument response!')
+            
 print('Total number of files you should have is ' + str(sum(lens)))
 
 
