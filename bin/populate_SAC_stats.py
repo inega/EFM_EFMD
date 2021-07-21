@@ -12,6 +12,7 @@ import os
 import numpy as np
 from glob import glob
 from obspy.core.util import AttribDict
+from obspy.signal.invsim import corn_freq_2_paz
 from obspy import UTCDateTime, read, read_inventory, read_events, Stream
 
 from obspy.clients.iris import Client
@@ -27,6 +28,7 @@ array_nm = ''
 st_nm = ''
 data_source = ''
 data_format = ''
+channel = ''
 location = '*'
 
 # Define path to where files live:
@@ -108,7 +110,7 @@ print('Pre-filter is = ' + str(pre_filt))
 print()
 
 # Get attributes and write sac files:
-
+evs_not_found = []
 for q in range(N):
 
     # Initialize a new Obspy stream:
@@ -116,36 +118,43 @@ for q in range(N):
 
     #print(q)
     stream = read(files[q])# This contains all the traces in the mseed file
+    
+    # Define event time from trace:
+    etimes = str(stream[0].stats.starttime + 120)[:-8]
 
-    # Streams may be longer than the network size, as some stations have more
-    # than one channel.
-    # Also, some streams contain more than one event, I need to
-    # take this into account! This means I need to get the event
-    # date from the traces, NOT FROM THE MSEED file name!
-    # Just in case there are breaks in the traces:
-    stream.merge()
-
-    # Some arrays have infrasound stations, as well as other non-seismic
-    # instruments. Make sure the stream does NOT contain non-seismic data!
+    # Check whether wvf network metadata info matches network code used here. Sometimes a
+    # station/array belongs to more than one network and this can cause conflict and/or
+    # make the remove_response method to fail.
     for tr in stream:
-        if tr.stats.channel != 'BDF': st.append(tr)
-
-    # Correct network name (for IMS data only):
-    if data_source == 'IMS':
-        for trace in st:
-            trace.stats.network = 'AU'
-
-    # Get stream length:
-    lens.append(len(st))
-
+        if tr.stats.network != network:
+            tr.stats.network = network
+    
     try:
-        # Remove instrument response (only if we didn't do it before!)
-        st.remove_response(pre_filt = pre_filt, output = 'VEL', inventory = inv,
-                           zero_mean = True, taper = True)
+        # Streams may be longer than the network size, as some stations have more
+        # than one channel.
+        # Also, some streams contain more than one event, I need to
+        # take this into account! This means I need to get the event
+        # date from the traces, NOT FROM THE MSEED file name!
+        # Just in case there are breaks in the traces:
+        stream.merge()
     
-        etimes = str(st[0].stats.starttime + 120)[:-8]
+        # Some arrays have infrasound stations, as well as other non-seismic
+        # instruments. Make sure the stream does NOT contain non-seismic data!
+        for tr in stream:
+            if channel in tr.stats.channel: st.append( tr)
     
+        # Get stream length:
+        lens.append(len(st))
+        
+	# Remove instrument response (only if we didn't do it before!) using the
+	# information in the inventory file:
+	st.remove_response( pre_filt = pre_filt, output = 'VEL', inventory = inv,
+			    zero_mean = True, taper = True )  
+                                        
+        # This step may fail if there are no traces for this event and channel (if the
+        # length of the stream is 0) or if the event is not found in the catalogue.
         for ev in evs:
+            #print(str(ev.origins[0].time)+' - '+str(etimes))
             if str(ev.origins[0].time)[:-8] == etimes:
                 print(etimes+', event found in the catalogue')
                 event_lat = ev.origins[0].latitude
@@ -170,81 +179,93 @@ for q in range(N):
             else:
                 pass
     
-        for trace in st:
-    
-            if trace.stats.npts > 60000:
-    
-                # Define necessary attributes for this trace and station:
-                net_name = trace.stats.network# Network name
-                stn_name = trace.stats.station#Name of the station
-                channel = trace.stats.channel
-                loc = trace.stats.location# Location of the station within the array
-                starttime = trace.stats.starttime# Trace starttime
-                endtime = trace.stats.endtime# Trace endtime
-                sampling_rate = trace.stats.sampling_rate# Sampling rate
-                delta = trace.stats.delta# Time interval between samples
-                npts = trace.stats.npts# Number of data in the file
-                calib = trace.stats.calib
-    
-                # Now I need to define some other attributes that may be useful:
-    
-                for station in net:
-                    #print(station.code+' - '+stn_name)
-                    if station.code == stn_name:
-                        station_lat = station.latitude
-                        station_lon = station.longitude
-                        station_elev = station.elevation
-    
-                        try:
-                            # Calculate distance, azimuth, backazimuth, etc from
-                            # each station to each event
-                            distaz = distaz_client.distaz(station_lat, station_lon,
-                                                          event_lat, event_lon)
-                            dist_km = distaz['distancemeters']/1000
-    
-                            # Save all the stats I want in my sac file:
-                            trace.stats.sac = AttribDict({'knetwk': net_name,
-                                                        'kstnm': stn_name,
-                                                        'kcmpnm': channel,
-                                                        'ko': event_time,
-                                                        't0': starttime,
-                                                        't1': endtime,
-                                                        'delta': delta,
-                                                        'user1': calib,
-                                                        'npts': npts,
-                                                        'stla': station_lat,
-                                                        'stlo': station_lon,
-                                                        'stel': station_elev,
-                                                        'imagtyp': magnitude_type,
-                                                        'evla': event_lat,
-                                                        'evlo': event_lon,
-                                                        'evdp': event_depth,
-                                                        'mag': event_magnitude,
-                                                        'gcarc': distaz['distance'],
-                                                        'dist': dist_km,
-                                                        'baz': distaz['backazimuth'],
-                                                        'az': distaz['azimuth']})
-    
-                            trace.write('%s.%s.%s.%s.%s.%s.SAC' %(t_str, net_name,
-                                        array_nm, stn_name, channel, event_magnitude),
-                                        format='SAC')
-                            #print('SAC files successfully saved')
-                            #print('--------------------------')
-                            break
-    
-                        except:
-                            print('distaz failed, trace not saved')
-                else:
-                    pass
-
-    except:
-            if len( st) == 0: print ('Stream for this event has 0 traces...')
-            else: print ('Wrong instrument response!')
+        try:
+            for trace in st:
+        
+                if trace.stats.npts > 60000:
+        
+                    # Define necessary attributes for this trace and station:
+                    net_name = trace.stats.network# Network name
+                    stn_name = trace.stats.station#Name of the station
+                    chan = trace.stats.channel
+                    loc = trace.stats.location# Location of the station within the array
+                    starttime = trace.stats.starttime# Trace starttime
+                    endtime = trace.stats.endtime# Trace endtime
+                    sampling_rate = trace.stats.sampling_rate# Sampling rate
+                    delta = trace.stats.delta# Time interval between samples
+                    npts = trace.stats.npts# Number of data in the file
+                    calib = trace.stats.calib# ???
+        
             
-print('Total number of files you should have is ' + str(sum(lens)))
+                    # Now I need to define some other attributes that may be useful:
+        
+                    for station in net:
+                        #print(station.code+' - '+stn_name)
+                        if station.code == stn_name:
+                            station_lat = station.latitude
+                            station_lon = station.longitude
+                            station_elev = station.elevation
+        
+                            try:
+                                # Calculate distance, azimuth, backazimuth, etc from
+                                # each station to each event
+                                distaz = distaz_client.distaz( station_lat, station_lon,
+                                                              event_lat, event_lon)
+                                dist_km = distaz['distancemeters']/1000
+        
+                                # Save all the stats I want in my sac file:
+                                trace.stats.sac = AttribDict({'knetwk': net_name,
+                                                            'kstnm': stn_name,
+                                                            'kcmpnm': chan,
+                                                            'ko': event_time,
+                                                            't0': starttime,
+                                                            't1': endtime,
+                                                            'delta': delta,
+                                                            'user1': calib,
+                                                            'npts': npts,
+                                                            'stla': station_lat,
+                                                            'stlo': station_lon,
+                                                            'stel': station_elev,
+                                                            'imagtyp': magnitude_type,
+                                                            'evla': event_lat,
+                                                            'evlo': event_lon,
+                                                            'evdp': event_depth,
+                                                            'mag': event_magnitude,
+                                                            'gcarc': distaz['distance'],
+                                                            'dist': dist_km,
+                                                            'baz': distaz['backazimuth'],
+                                                            'az': distaz['azimuth']})
+        
+                                trace.write('%s.%s.%s.%s.%s.%s.SAC' %(t_str, net_name,
+                                            array_nm, stn_name, chan, event_magnitude),
+                                            format='SAC')
+                                #print('SAC files successfully saved')
+                                #print('--------------------------')
+                                break
+        
+                            except:
+                                try:
+                                    event_depth
+                                except:
+                                    print('Event not found in the catalogue, trace not saved')
+                                    evs_not_found.append(etimes)
+                                else:
+                                    print('distaz_client failed, trace not saved')
+                    else:
+                            pass
+        except:
+            if len( st) == 0: print ('Stream for this event has 0 traces...')
+            else: print ('Weird error!')
+    except:
+        print ('Could not merge traces!')
+        
+print('Everything worked just fine')
 
+print('Total number of files you should have is ' + str( sum( lens)))
 
-
+print('')
+print('These events could not be found in the catalogue:')
+print(evs_not_found)
 
 
 

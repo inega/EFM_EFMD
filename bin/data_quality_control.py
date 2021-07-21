@@ -11,6 +11,7 @@ Created on Dec 10, 2017
 
 '''
 
+
 import shutil
 import numpy as np
 from glob import glob
@@ -24,8 +25,7 @@ from obspy import UTCDateTime, read, Stream
 
 
 
-
-def raw_traces_streams_EFM(network, array_nm, data_source, raw_sac_path, fband):
+def raw_traces_streams_EFM( network, array_nm, data_source, raw_sac_path, fband):
 
     '''
 
@@ -54,7 +54,7 @@ def raw_traces_streams_EFM(network, array_nm, data_source, raw_sac_path, fband):
 
     #                         GET RAW SAC FILES                               #
 
-    all_files = glob(raw_sac_path + '*.SAC')# List of all files inside the wvf
+    all_files = glob( raw_sac_path + '*.SAC')# List of all files inside the wvf
                                              # directory
     print('Total number of raw SAC files is ', len(all_files))
 
@@ -90,7 +90,7 @@ def raw_traces_streams_EFM(network, array_nm, data_source, raw_sac_path, fband):
         # Let's create a string with the event date that we will use as dict
         # keys, to avoid duplicities in our directories:
         event_date = UTCDateTime(tr[0].stats.starttime + 120)
-        event_date_string = datetime_string (event_date)
+        event_date_string = datetime_string ( event_date )
 
         key = event_date_string + ',' + tr[0].stats.station
 
@@ -105,14 +105,14 @@ def raw_traces_streams_EFM(network, array_nm, data_source, raw_sac_path, fband):
         and  channel  != 'BH2' and channel  != 'BH1':
             # We need to detrend and taper before filtering to remove any linear \
             # trend and to make sure our traces start with zero.
-            tr.detrend('linear')
-            tr.taper(max_percentage = 0.05, type = 'hann')
+            tr.detrend( 'linear')
+            tr.taper( max_percentage = 0.05, type = 'hann')
 
             # Change distance units to m:
             tr[0].stats.sac.dist = 1000*tr[0].stats.sac.dist
 
             # Previous filtering, apply to all traces:
-            tr.filter('highpass', freq = 0.33333)
+            tr.filter( 'highpass', freq = 0.33333)
 
             # For 40 Hz sampling rates, traces should be exactly 144000 samples
             # long (72000 for 20 Hz s.rate). However, I've seen some of them
@@ -126,7 +126,7 @@ def raw_traces_streams_EFM(network, array_nm, data_source, raw_sac_path, fband):
                 if npts < 144000:
                     diff = 144000 - npts
                     zers = np.zeros((diff,1))
-                    new_data = np.append(tr[0].data, zers)
+                    new_data = np.append( tr[0].data, zers)
                     tr[0].data = new_data
 
             elif srate ==  20:
@@ -138,18 +138,18 @@ def raw_traces_streams_EFM(network, array_nm, data_source, raw_sac_path, fband):
                                 strict_length = False)
                 if npts < 72000:
                     diff = 72000 - npts
-                    zers = np.zeros((diff, 1))
-                    new_data = np.append(tr[0].data, zers)
+                    zers = np.zeros(( diff, 1))
+                    new_data = np.append( tr[0].data, zers)
                     tr[0].data = new_data
 
-            unfilt_streams[key].append(tr[0])
+            unfilt_streams[key].append( tr[0])
 
             # Filter trace into the desired frequency band:
             tr2 = copy.deepcopy(tr)
-            tr2.filter('bandpass', freqmin = fbands[fband][0],
+            tr2.filter( 'bandpass', freqmin = fbands[fband][0],
                        freqmax = fbands[fband][1], corners = 2,
                        zerophase = True)
-            streams[key].append(tr2[0])
+            streams[key].append( tr2[0])
 
     print('Streams successfully created!')
 
@@ -161,7 +161,7 @@ def raw_traces_streams_EFM(network, array_nm, data_source, raw_sac_path, fband):
 
 
 
-def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
+def quality_test_EFM( network, array_nm, data_source, main_path, raw_sac_path,
                      fband):
 
     '''
@@ -198,7 +198,7 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
     # traces we have for each event and station, unfiltered and also filtered
     # into frequency band fband. The keys of the dictionary are the start time
     # and the station code in the format 'UTCDateTime(starttime), station.code'.
-    unfilt_streams, filt_streams = raw_traces_streams_EFM(network, array_nm,
+    unfilt_streams, filt_streams = raw_traces_streams_EFM( network, array_nm,
                                                           data_source,
                                                           raw_sac_path, fband)
     # n = len(filt_streams)
@@ -208,7 +208,7 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
 
     for key in filt_streams:
 
-        print(key)
+        print( key)
 
         # Some streams only had radial and transverse traces and some had no
         # traces at all (not all stations recorded some events). I can't use
@@ -218,7 +218,7 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
             # Call the get_P_wave arrivals to get the theoretical P wave arrival
             # for each trace.
             ev_time = key[:15]
-            t_P,t_P_date = get_Pwave_arrivals(filt_streams[key], ev_time,
+            t_P,t_P_date = get_Pwave_arrivals( filt_streams[key], ev_time,
                                                model = 'prem')
 
             # Signal time window: each stream in filt_streams contains the
@@ -233,7 +233,7 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
             # Time vector:
             npts = filt_streams[key][0].stats.npts
             srate = filt_streams[key][0].stats.sampling_rate
-            t = np.arange(npts) / srate
+            t = np.arange( npts) / srate
 
             # Pre-define signal-to-noise ratio (SNR) as a dictionary:
             SNR = {}; SNR[array_nm] = []
@@ -246,7 +246,7 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
             # We take the noise window from the beginning of the trace up to 5
             # seconds before the theoretical P wave arrival (number of
             # samples = time * sampling_rate):
-            noise_index = int(p_arr_index - (5 * srate))
+            noise_index = int( p_arr_index - ( 5 * srate))
 
             #        ################################################         #
 
@@ -275,7 +275,7 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
 
             # Calculate signal-to-noise ratio and set threshold:
             snr = pp_signal / pp_noise
-            SNR[array_nm].append( snr)
+            SNR[array_nm].append(  snr)
             thresh = 5
 
             # We want to save the SAC files in independent directories for each
@@ -292,7 +292,7 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
                                + array_nm + '.' + trace.stats.station + '.' \
                                + trace.stats.channel + '.' \
                                + str(trace.stats.sac.mag) + '.SAC'
-                    trace.write(filename, format = 'SAC')
+                    trace.write( filename, format = 'SAC')
 
         else:
 
@@ -302,13 +302,13 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
     # Save the inverse of the sampling rate into a file: we take it from
     # one of the streams in unfilt_streams (it doesn't matter which one).
     delta = unfilt_streams[key][0].stats.delta
-    h = open(main_path + array_nm + '_delta.pckl', 'wb')
-    pickle.dump(delta, h)
-    h.close()
+    h = open( main_path + array_nm + '_delta.pckl', 'wb')
+    pickle.dump( delta, h)
+    h.close( )
 
     print('List of unusable streams: ')
     print(' ')
-    print(unusable_streams)
+    print( unusable_streams)
     print(' ')
     print('Everything worked just fine')
 
@@ -319,7 +319,6 @@ def quality_test_EFM(network, array_nm, data_source, main_path, raw_sac_path,
 ###############################################################################
 ####                    END OF THE FUNCTION                                ####
 ###############################################################################
-
 
 
 
@@ -379,12 +378,13 @@ def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, fband, comp = 'all')
         if comp != 'all':
             files = glob (directory + '*' + comp + '*.SAC')
             
-        chans = []
+        chans = []; stream = Stream()
         for i, file in enumerate(files):
             st = read (file)
             st.filter ('bandpass', freqmin = fbands[fband][0], freqmax = fbands[fband][1], 
                        corners = 2, zerophase = True)
             tr = st[0]
+            stream.append (tr)
             srate = tr.stats.sampling_rate
             chans.append (tr.stats.station + ', ' + tr.stats.channel)
             
@@ -405,9 +405,16 @@ def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, fband, comp = 'all')
             t_P = arr_times[0]
             t_P_ind = ( np.abs( tr.times() - t_P) ).argmin()
             
-            # Plot traces:
-            tr_max = np.max (np.abs (tr.data[int(t_P_ind - 25*srate):int(t_P_ind + 100*srate)]))
-            ax.plot (tr.times(), (tr.data/tr_max) + i, 'k', linewidth = 0.8)
+        # Get maximum amplitude for the normalization of the traces to the vertical
+        # component:
+        maxamps = []
+        for tr in stream:
+            if 'Z' in tr.stats.channel:
+                maxamps.append (np.max (np.abs (tr.data[int(t_P_ind - 25*srate):int(t_P_ind + 100*srate)])))
+        tr_max = np.array(maxamps).max()
+        # Plot traces:
+        for i, tr in enumerate(stream):
+            ax.plot (tr.times(), (tr.data/tr_max) + i*1.8, 'k', linewidth = 0.8)
             
         # Plot theoretical arrivals:
         colors = ['red', 'orange', 'limegreen', 'cornflowerblue', 'darkviolet', 'coral',
@@ -415,13 +422,13 @@ def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, fband, comp = 'all')
         for i in range(len(arrs)):
             ax.axvline (arr_times[i], linewidth = 1.5, color = colors[i], label = arrs[i])
 
-        ax.set_yticks([0, 1, 2])
+        ax.set_yticks (list(1.8*np.arange(len(stream))))
         ax.set_yticklabels (chans, fontsize = 14)
         ax.tick_params (axis = 'x', labelsize = 14)
         ax.grid (linestyle = 'dashed')
         ax.legend (loc = 'upper left', fontsize = 14)
         ax.set_xlim ([t_P-50, t_P+250])
-        ax.set_ylim ([-tr_max-1.1, tr_max + len(files)*1.1])
+        ax.set_ylim ([-tr_max-1.8, tr_max + len(files)*1.8])
         ax.set_xlabel ('Time (s)', fontsize = 16)
         ax.set_title (str(ev_date) + ', ' + array_nm, fontsize = 18)
         
@@ -449,8 +456,10 @@ network = ''
 array_nm = ''
 data_source = ''
 
-# Start of the period of interest:
-# starttime = UTCDateTime('2018-01-01T00:00:00')
+# Define which step(s) of the quality control process you want to run:
+QT_step1 = False
+QT_step2 = False
+QT_step3 = True
 
 # Define frequency band names and data components:
 fbs = ['A','B','C','D','E','F','G','H']
@@ -460,89 +469,93 @@ comps = ['Z','T','R']
 # directories are; b) path to the directories where our raw SAC data live (we
 # may have more than one, if we divided the dataset); c) path to the directory
 # where we want to store the quality control plots.
-main_path = '/path/to/parent/directory/where/our/data/live/'
+main_path = '/path/to/parent/directory/where/our/data/live/' + data_source + '/' \
+            + network + '/' + array_nm + '/'
 raw_sac_paths = glob(main_path + 'SAC/raw_SAC*/')
-plots_path = main_path + 'SAC/QT_plots/'
 
 # Run QT:
-for raw_sac_path in raw_sac_paths:
+if QT_step1 == True:
+    for raw_sac_path in raw_sac_paths:
 
-    print(network)
-    print(array_nm)
-    print(raw_sac_path)
+        print(network)
+        print(array_nm)
+        print(raw_sac_path)
 
-    for fband in fbs:
-        SNR = quality_test_EFM(network, array_nm, data_source, main_path,
-                                raw_sac_path, fband)
+	for fband in fbs:
+	    SNR = quality_test_EFM(network, array_nm, data_source, main_path,
+                                 raw_sac_path, fband)
 
-print('It took the quality control function ' + str(datetime.now() - sttime) \
-      + ' s to run')
+    print('It took the quality control function ' + str(datetime.now() - sttime) \
+	  + ' s to run')
 
 
 # Run sanity check: this function plots the 1-comp or 3-comp traces for each good quality
 # event and saves them to the specified directory:
-print('Running sanity check...')
-gq_sac_path = main_path + 'SAC/GQ_SAC/'
-plots_path = main_path + 'SAC/QT_plots/'
-
-for fband in fbs:
-    print( 'Frequency band: ' + fband)
-    QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, fband, comp = 'all')
+if QT_step2 == True:
+    print('Running sanity check...')
+    gq_sac_path = main_path + 'SAC/GQ_SAC/'
+    plots_path = main_path + 'SAC/QT_plots/'
     
-print('It took the whole script ' + str(datetime.now() - sttime) + ' to run')
+    for fband in fbs:
+        print( 'Frequency band: ' + fband)
+        QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, fband, comp = 'all')
+    
+    print('It took the whole script ' + str(datetime.now() - sttime) + ' to run')
 
 
 
 ###############################################################################
 
-# #     RUN THIS PART OF THE CODE ONLY AFTER MANUALLY INSPECTING THE PLOTS      #
+#     RUN THIS PART OF THE CODE ONLY AFTER MANUALLY INSPECTING THE PLOTS      #
 
-# # It is highly recommended to manually check ALL the plots created by the function
-# # above to get rid of bad events that may have passed the initial quality control.
-# # Move the plots to an "Unusable events" directory within the SAC directory so the code 
-# # below can remove these events from the dataset.
-
-# for fband in fbs:
-
-#     figs = glob (main_path + 'SAC/Unusable_events/' + fband + '/*')
-
-#     fig_ev_dates = []
-#     for fig in figs:
-#         ev_date = fig[-19:-4]
-#         fig_ev_dates.append(ev_date)
-
-#     dirs = glob( main_path + '/SAC/GQ_SAC/' + fband + '/*')
-#     dest = main_path + 'SAC/Unusable_events/' + fband + '/'
-
-#     for directory in dirs:
-#         ev_date = directory[-15:]
-#         if ev_date in fig_ev_dates:
-#             shutil.move( directory, dest)
-
-
-# # Sanity check:
-# for fband in fbs:
-
-#     unusable_figs = glob( main_path + 'SAC/Unusable_events/' + fband + '/*.png')
-#     unusable_dirs = glob( main_path + 'SAC/Unusable_events/' + fband + '/*/')
-
-#     dir_ev_dates = []
-#     for directory in unusable_dirs:
-#         dir_ev_dates.append( directory[-16:-1] )
-
-#     for fig in unusable_figs:
-#         fig_ev_date = fig[-19:-4]
-#         if fig_ev_date not in dir_ev_dates:
-#             print('Event on ' +  fig_ev_date + ' for fband ' + fband \
-#                   + ' should be in Unusable events directory')
-
-
-#     if len(unusable_figs) != len(unusable_dirs):
-#         print('Something went wrong for fband ' + fband + '!')
-#     else:
-#         print('Number of dirs in Unusable_events for fband ' + fband \
-#               + ' is correct! Well done!')
-
+# It is highly recommended to manually check ALL the plots created by the function
+# above to get rid of bad events that may have passed the initial quality control.
+# Move the plots to an "Unusable events" directory within the SAC directory so the code 
+# below can remove these events from the dataset.
+if QT_step3 == True:
+    
+    for fband in fbs:
+    
+        figs = glob (main_path + 'SAC/Unusable_events/' + fband + '/*')
+    
+        fig_ev_dates = []
+        for fig in figs:
+            ev_date = fig[-19:-4]
+            fig_ev_dates.append(ev_date)
+    
+        dirs = glob( main_path + '/SAC/GQ_SAC/' + fband + '/*')
+        dest = main_path + 'SAC/Unusable_events/' + fband + '/'
+    
+        for directory in dirs:
+            ev_date = directory[-15:]
+            if ev_date in fig_ev_dates:
+                shutil.move( directory, dest)
+    
+    
+    # Sanity check:
+    for fband in fbs:
+    
+        unusable_figs = glob( main_path + 'SAC/Unusable_events/' + fband + '/*.png')
+        unusable_dirs = glob( main_path + 'SAC/Unusable_events/' + fband + '/*/')
+    
+        dir_ev_dates = []
+        for directory in unusable_dirs:
+            dir_ev_dates.append( directory[-16:-1] )
+    
+        for fig in unusable_figs:
+            fig_ev_date = fig[-19:-4]
+            if fig_ev_date not in dir_ev_dates:
+                print('Event on ' +  fig_ev_date + ' for fband ' + fband \
+                      + ' should be in Unusable events directory')
+    
+    
+        if len(unusable_figs) != len(unusable_dirs):
+            print('Something went wrong for fband ' + fband + '!')
+        else:
+            print('Number of dirs in Unusable_events for fband ' + fband \
+                  + ' is correct! Well done!')
+    
+      
 
 
 
