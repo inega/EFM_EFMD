@@ -1,5 +1,5 @@
 [![DOI](https://zenodo.org/badge/330757440.svg)](https://zenodo.org/badge/latestdoi/330757440)
-[![DOI](https://img.shields.io/badge/DOI-10.31223/X5S89Q-blue.svg)](https://doi.org/10.31223/X5S89Q)
+[![DOI](https://img.shields.io/badge/Preprint-10.31223/X5S89Q-blue.svg)](https://doi.org/10.31223/X5S89Q)
 
 
 
