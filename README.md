@@ -71,8 +71,11 @@ Please cite our project:
 
 
 #######################################################################################
-    
-### **Synthetic tests:**
+
+### **Notes**
+
+
+#### **Synthetic tests:**
 
       For synthetic tests, we need to create the synthetic envelopes for a given
       combination of scattering parameters first, and save them in the same 
@@ -82,9 +85,7 @@ Please cite our project:
       parameter values will also be stored in the same dictionary as the synthetic
       envelopes, so they can be compared with the ones obtained from the inversion.
 
-#######################################################################################
-
-### **Velocity data:**
+#### **Velocity data:**
 
       The velocity model for each station/array needs to be saved to a csv file.
       The format of this file is as follow:
@@ -103,27 +104,27 @@ Please cite our project:
 	  9.69,19.68,29.98,200
 	  6.20,6.40,6.80,8.24
 
-#######################################################################################
+#### **Extra/auxiliary functions**
 
-Extra/auxiliary functions are stored in these files in the lib directory:
+    These are stored in the lib directory.
    
-    EFM - core functions of the EFM
+    - EFM - core functions of the EFM
 
-    EFM_EFMD_tools.py - functions to create streams of traces and do basic processing/plotting
+    - EFM_EFMD_tools.py - functions to create streams of traces and do basic processing/plotting
 			and other auxiliary functions
 			
-    F_EFM - auxiliary functions for the EFM
+    - F_EFM - auxiliary functions for the EFM
 
-    EFMD_Bayesian_modelling - core functions of the EFMD
+    - EFMD_Bayesian_modelling - core functions of the EFMD
 
-    F_EFMD - auxiliary functions for the EFMD
+    - F_EFMD - auxiliary functions for the EFMD
 
-    fk_analysis.py - functions to carry out an FK analysis, get array geometry and/or get 
+    - fk_analysis.py - functions to carry out an FK analysis, get array geometry and/or get 
 		     theoretical P wave arrivals
 		     
-    trace_alignment.py - functions to align traces within a stream and stack them
+    - trace_alignment.py - functions to align traces within a stream and stack them
 
-    vel_models - functions to load velocity data and create the EFM/EFMD velocity model
+    - vel_models - functions to load velocity data and create the EFM/EFMD velocity model
    
 
 
