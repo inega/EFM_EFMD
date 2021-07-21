@@ -1,4 +1,4 @@
-**Energy Flux Models for Seismic Scattering and Attenuation Characterization**
+# **Energy Flux Models for Seismic Scattering and Attenuation Characterization**
 
 This repository contains all the files needed to characterize the small-scale heterogeneity
 structure and attenuation of the lithosphere using the EFM/EFMD Bayesian approach from
@@ -9,7 +9,7 @@ to store our data and/or results need to be added to the scripts. All editable f
 found at the top of the scripts. All executable files are stored in the /bin directory and 
 modules than need to be loaded in the /lib directory.
     
-**Steps:**
+### **Steps:**
 
 **0 -** Create a python environment with all the necessary dependencies for the analysis. The
     seismodelling_env.yml file can be used for this step.
@@ -48,12 +48,29 @@ modules than need to be loaded in the /lib directory.
     
 Please do not hesitate to contact me for any questions or issues running these codes.
 
+
+## **Citation**
+
+Please cite our project:
+
+[Small-scale lithospheric heterogeneity characterization using Bayesian inference (Preprint)](https://doi.org/10.31223/X5S89Q)
+
 [![DOI](https://zenodo.org/badge/330757440.svg)](https://zenodo.org/badge/latestdoi/330757440)
+
+
+
+## **References**
+
+[Korn, M., 1990. A modified energy flux model for lithospheric scattering of teleseismic body waves. Geophysical Journal International, 102(1), pp.165-175.](10.1111/j.1365-246X.1990.tb00538.x)
+
+[Korn, M., 1997. Modelling the teleseismic P coda envelope: depth dependent scattering and deterministic structure. Physics of the earth and planetary interiors, 104(1-3), pp.23-36.](10.1016/S0031-9201(97)00044-7)
+
 
 
 #######################################################################################
     
-**Synthetic tests:**
+### **Synthetic tests:**
+
       For synthetic tests, we need to create the synthetic envelopes for a given
       combination of scattering parameters first, and save them in the same 
       directory and format than our normalised coda envelopes from the EFM. The 
@@ -64,7 +81,8 @@ Please do not hesitate to contact me for any questions or issues running these c
 
 #######################################################################################
 
-**Velocity data:**
+### **Velocity data:**
+
       The velocity model for each station/array needs to be saved to a csv file.
       The format of this file is as follow:
       Line 1 = name of the velocity data source (CRUST1,etc)
