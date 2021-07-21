@@ -39,6 +39,8 @@ Steps:
     avoid mistakes. The EFM_EFMD inversion will plot the combined results and save 
     the figures into this new subdirectory.
     
+Please do not hesitate to contact me for any questions or issues running these codes.
+    
 NOTE: For synthetic tests, we need to create the synthetic envelopes for a given
       combination of scattering parameters first, and save them in the same 
       directory and format than our normalised coda envelopes from the EFM. The 
