@@ -5,7 +5,7 @@
 
 This repository contains all the files needed to characterize the small-scale heterogeneity
 structure and attenuation of the lithosphere using the EFM/EFMD Bayesian approach from
-González-Álvarez et al. (2021). 
+González Álvarez et al. (2021). 
 
 The network, array name, velocity source name and paths of the directories where we want
 to store our data and/or results need to be added to the scripts. All editable fields are
@@ -56,7 +56,7 @@ Please do not hesitate to contact me for any questions or issues running these c
 
 Please cite our project:
 
-[Small-scale lithospheric heterogeneity characterization using Bayesian inference (Preprint)](https://doi.org/10.31223/X5S89Q)
+[González Álvarez et al., 2020. Small-scale lithospheric heterogeneity characterization using Bayesian inference (Preprint)](https://doi.org/10.31223/X5S89Q)
 
 [![DOI](https://zenodo.org/badge/330757440.svg)](https://zenodo.org/badge/latestdoi/330757440)
 
