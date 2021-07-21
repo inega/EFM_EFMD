@@ -1,4 +1,4 @@
-This directory contains all the files needed to characterize the small-scale heterogeneity
+This repository contains all the files needed to characterize the small-scale heterogeneity
 structure and attenuation of the lithosphere using the EFM/EFMD Bayesian approach. 
 
 The network, array name, velocity source name and paths of the directories where we want
@@ -92,5 +92,9 @@ Extra/auxiliary functions are stored in these files in the lib directory:
     F_EFMD - auxiliary functions for the EFMD
 
       
-      
+
+
+[![DOI](https://zenodo.org/badge/330757440.svg)](https://zenodo.org/badge/latestdoi/330757440)
+
+
       
