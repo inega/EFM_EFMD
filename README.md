@@ -1,3 +1,6 @@
+[![DOI](https://zenodo.org/badge/330757440.svg)](https://zenodo.org/badge/latestdoi/330757440)
+
+
 # **Energy Flux Models for Seismic Scattering and Attenuation Characterization**
 
 This repository contains all the files needed to characterize the small-scale heterogeneity
