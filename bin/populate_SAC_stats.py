@@ -129,28 +129,28 @@ for q in range(N):
         if tr.stats.network != network:
             tr.stats.network = network
     
+    # Streams may be longer than the network size, as some stations have more
+    # than one channel.
+    # Also, some streams contain more than one event, I need to
+    # take this into account! This means I need to get the event
+    # date from the traces, NOT FROM THE MSEED file name!
+    # Just in case there are breaks in the traces:
+    stream.merge()
+
+    # Some arrays have infrasound stations, as well as other non-seismic
+    # instruments. Make sure the stream does NOT contain non-seismic data!
+    for tr in stream:
+        if channel in tr.stats.channel: st.append( tr)
+
+    # Get stream length:
+    lens.append(len(st))
+    
     try:
-        # Streams may be longer than the network size, as some stations have more
-        # than one channel.
-        # Also, some streams contain more than one event, I need to
-        # take this into account! This means I need to get the event
-        # date from the traces, NOT FROM THE MSEED file name!
-        # Just in case there are breaks in the traces:
-        stream.merge()
-    
-        # Some arrays have infrasound stations, as well as other non-seismic
-        # instruments. Make sure the stream does NOT contain non-seismic data!
-        for tr in stream:
-            if channel in tr.stats.channel: st.append( tr)
-    
-        # Get stream length:
-        lens.append(len(st))
-        
-	# Remove instrument response (only if we didn't do it before!) using the
-	# information in the inventory file:
-	st.remove_response( pre_filt = pre_filt, output = 'VEL', inventory = inv,
-			    zero_mean = True, taper = True )  
-                                        
+        # Remove instrument response (only if we didn't do it before!) using the
+        # information in the inventory file:
+        st.remove_response( pre_filt = pre_filt, output = 'VEL', inventory = inv,
+                           zero_mean = True, taper = True )  
+                                            
         # This step may fail if there are no traces for this event and channel (if the
         # length of the stream is 0) or if the event is not found in the catalogue.
         for ev in evs:
@@ -257,7 +257,7 @@ for q in range(N):
             if len( st) == 0: print ('Stream for this event has 0 traces...')
             else: print ('Weird error!')
     except:
-        print ('Could not merge traces!')
+        print ('Instrument response may be wrong, trace not saved')
         
 print('Everything worked just fine')
 

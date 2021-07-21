@@ -481,9 +481,9 @@ if QT_step1 == True:
         print(array_nm)
         print(raw_sac_path)
 
-	for fband in fbs:
-	    SNR = quality_test_EFM(network, array_nm, data_source, main_path,
-                                 raw_sac_path, fband)
+    for fband in fbs:
+        SNR = quality_test_EFM(network, array_nm, data_source, main_path,
+                               raw_sac_path, fband)
 
     print('It took the quality control function ' + str(datetime.now() - sttime) \
 	  + ' s to run')
@@ -510,8 +510,9 @@ if QT_step2 == True:
 
 # It is highly recommended to manually check ALL the plots created by the function
 # above to get rid of bad events that may have passed the initial quality control.
-# Move the plots to an "Unusable events" directory within the SAC directory so the code 
-# below can remove these events from the dataset.
+# Manually move the plots from the QT_plots directory for each frequency band to 
+# an "Unusable events" directory for the same fband within the SAC directory so the 
+# code below can remove these events from the dataset.
 if QT_step3 == True:
     
     for fband in fbs:
