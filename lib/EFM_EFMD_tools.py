@@ -205,7 +205,7 @@ def create_stream_EFM(array_nm, ev_date, main_sac_path, comp, fband, tJ,
             for trace in st2:
                 plt.plot(trace.data, 'k', linewidth = 0.8)
             plt.title(str(trace.stats.starttime) + ', ' + str(trace.stats.channel))
-            plt.savefig(fname, bbox_inches = 'tight')
+            plt.savefig(fname, dpi = 300, bbox_inches = 'tight')
             plt.close()
 
         print('... stream successfully created')
@@ -564,7 +564,7 @@ def stream_plotting_trim_stack(array_nm, ev_date, stream, comp, tJ,
     #Save figure:
     if filename != None:
         fname = filename
-        plt.savefig(fname, transparent = False)
+        plt.savefig(fname, dpi = 300, bbox_inches = 'tight')
 
     if show_plots == False: plt.close()
 

@@ -495,7 +495,7 @@ def fk_plot(array_nm, stream, smin, smax, s_int, tmin, tmax, units,
     ax.tick_params(axis = 'both', which = 'major', labelsize = 10)
 
     if fname != None:
-        f.savefig(fname, bbox_inches = 'tight')
+        f.savefig(fname, dpi = 300, bbox_inches = 'tight')
 
     if show_plot == False:
         plt.close()
@@ -535,7 +535,7 @@ def plot_array(stream, fname = None, show_plot = False):
     plt.legend(ncol=2)
 
     if fname != None:
-        plt.savefig(fname, bbox_inches = 'tight')
+        plt.savefig(fname, dpi = 300, bbox_inches = 'tight')
     if show_plot != True:
         plt.close()
 

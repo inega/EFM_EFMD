@@ -433,9 +433,10 @@ def QT_sanity_check_EFM (array_nm, gq_sac_path, plots_path, fband, comp = 'all')
         ax.set_title (str(ev_date) + ', ' + array_nm, fontsize = 18)
         
         # Save figure:
-        if not os.path.exists (plots_path + fband + '/'): os.makedirs (plots_path + fband + '/')
+        if not os.path.exists (plots_path + fband + '/'): 
+            os.makedirs (plots_path + fband + '/')
         fname = plots_path + fband + '/' + array_nm + '_' + directory[-16:-1] + '.png'
-        f.savefig ( fname, bbox_inches = 'tight')
+        f.savefig ( fname, dpi = 300, bbox_inches = 'tight')
         plt.close('all')
     
   

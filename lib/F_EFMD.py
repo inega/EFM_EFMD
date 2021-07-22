@@ -1486,7 +1486,7 @@ def EFMD_plot_results(array_nm, fbands, units, vel_model, dataset,
     ax2.grid()
 
     figname = figs_fname + '_kept_model_likelihoods_histograms.'
-    plt.savefig(figname + 'png', bbox_inches = 'tight')
+    plt.savefig(figname + 'png', dpi = 300, bbox_inches = 'tight')
     plt.savefig(figname + 'pdf', bbox_inches = 'tight')
     if showplots == False: plt.close()
 
@@ -1597,7 +1597,7 @@ def EFMD_plot_results(array_nm, fbands, units, vel_model, dataset,
                    + '%, RM = ' + RM_str + ', MLM = ' + MLM_str, fontsize = 20)
 
     figname = figs_fname + '_structural_params_histograms.'
-    plt.savefig(figname + 'png', bbox_inches = 'tight')
+    plt.savefig(figname + 'png', dpi = 300, bbox_inches = 'tight')
     plt.savefig(figname + 'pdf', bbox_inches = 'tight')
     if showplots == False: plt.close()
 
@@ -1662,7 +1662,7 @@ def EFMD_plot_results(array_nm, fbands, units, vel_model, dataset,
                    + '%, RM = ' + RM_str + ', MLM = ' + MLM_str, fontsize = 20)
 
     figname = figs_fname + '_structural_params_2D_histograms.'
-    plt.savefig(figname + 'png', bbox_inches = 'tight')
+    plt.savefig(figname + 'png', dpi = 300, bbox_inches = 'tight')
     plt.savefig(figname + 'pdf', bbox_inches = 'tight')
     if showplots == False: plt.close()
 
@@ -1760,7 +1760,7 @@ def EFMD_plot_results(array_nm, fbands, units, vel_model, dataset,
                    + '%, RM = ' + RM_str + ', MLM = ' + MLM_str, fontsize = 20)
 
     figname = figs_fname + '_DATA_vs_RM_MLM_all_tested_models_envelopes.'
-    plt.savefig(figname + 'png', bbox_inches = 'tight')
+    plt.savefig(figname + 'png', dpi = 300, bbox_inches = 'tight')
     plt.savefig(figname + 'pdf', bbox_inches = 'tight')
     if showplots == False: plt.close()
 
@@ -2501,8 +2501,8 @@ def EFMD_plot_results_summary ( array_nm, fbands, units, vel_model,
                      fontsize = major_text_size, color = 'k')
 
     figname = figs_fname + '_FULL_RESULTS_SUMMARY.'
-    plt.savefig(figname + 'png', bbox_inches = 'tight')
-    plt.savefig(figname + 'pdf', bbox_inches = 'tight')
+    plt.savefig(figname + 'png', dpi = 300, bbox_inches = 'tight')
+    # plt.savefig(figname + 'pdf', bbox_inches = 'tight')
     if showplots == False: plt.close()
 
 ###############################################################################
@@ -3015,8 +3015,8 @@ def EFMD_plot_results_summary_simple (array_nm, fbands, units,
         cbaxes.tick_params(axis = 'both', labelsize = minor_text_size-2)
 
     figname = figs_fname + '_FULL_RESULTS_SUMMARY_simple.'
-    plt.savefig(figname + 'png', bbox_inches = 'tight')
-    plt.savefig(figname + 'pdf', bbox_inches = 'tight')
+    plt.savefig(figname + 'png', dpi = 300, bbox_inches = 'tight')
+    # plt.savefig(figname + 'pdf', bbox_inches = 'tight')
     if showplots == False: plt.close()
 
 ###############################################################################
@@ -3271,8 +3271,8 @@ def EFMD_plot_x_histograms (array_nm, s_nces_fname, EFMD_results, fbands,
                 fontsize = minor_text_size, color = 'k')
 
     figname = figs_fname + '_parameters_cross_histograms.'
-    plt.savefig(figname + 'png', bbox_inches = 'tight')
-    plt.savefig(figname + 'pdf', bbox_inches = 'tight')
+    plt.savefig(figname + 'png', dpi = 300, bbox_inches = 'tight')
+    # plt.savefig(figname + 'pdf', bbox_inches = 'tight')
     if showplots == False: plt.close()
 
 ###############################################################################

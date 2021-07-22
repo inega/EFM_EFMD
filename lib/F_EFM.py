@@ -170,7 +170,7 @@ def create_nce3c_EFM(array_nm, sac_path, fband, tJ, fname = None):
             path = Path(fname)
             if not os.path.exists(path.parent):
                 os.makedirs(path.parent)
-            plt.savefig(fname, bbox_inches = 'tight')
+            plt.savefig(fname, dpi = 300, bbox_inches = 'tight')
             plt.close()
             #print('Plotting alignment section...')
 
@@ -635,7 +635,7 @@ def plot_envelopes(array_nm, ev_date, envs, nce, fband, tJ, filename = None,
         path = Path(filename)
         if not os.path.exists(path.parent):
             os.makedirs(path.parent)
-        plt.savefig(filename, bbox_inches = 'tight')
+        plt.savefig(filename, dpi = 300, bbox_inches = 'tight')
     if show_plot == False: plt.close('all')
 
 ###############################################################################

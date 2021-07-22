@@ -490,7 +490,7 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
 
                 fname = figs_fname + '_envs_linfit_' + fband
                 plt.savefig(fname + '.pdf', bbox_inches = 'tight')
-                plt.savefig(fname + '.png', bbox_inches = 'tight')
+                plt.savefig(fname + '.png', dpi = 300, bbox_inches = 'tight')
                 plt.close('all')
 
                 ###############################################################
@@ -572,7 +572,7 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
                 plt.gca().spines[side].set_linewidth(3)
             fname = figs_fname + '_all_envs_linfits'
             plt.savefig(fname + '.pdf', bbox_inches = 'tight')
-            plt.savefig(fname + '.png', bbox_inches = 'tight')
+            plt.savefig(fname + '.png', dpi = 300, bbox_inches = 'tight')
             plt.close('all')
 
             ###################################################################
@@ -660,7 +660,7 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
             plt.legend(loc = 'lower right', fontsize = 16)
             fname = figs_fname + '_Qs_vs_theoretical_curve'
             plt.savefig(fname + '.pdf', bbox_inches = 'tight')
-            plt.savefig(fname + '.png', bbox_inches = 'tight')
+            plt.savefig(fname + '.png', dpi = 300, bbox_inches = 'tight')
             plt.close('all')
 
             ###################################################################
@@ -833,7 +833,7 @@ def EFM_analysis (array_nm, fbands, v, tJ, delta, nces0_fname, s_envs_fname,
                        title_fontsize = 14)
             fname = figs_fname + '_Qi0_Qdiff_a1s_vs_theoretical_curve'
             plt.savefig(fname + '.pdf', bbox_inches = 'tight')
-            plt.savefig(fname + '.png', bbox_inches = 'tight')
+            plt.savefig(fname + '.png', dpi = 300, bbox_inches = 'tight')
             plt.close()
 
             print('---------------------------------------------------------')
